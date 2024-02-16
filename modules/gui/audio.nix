@@ -22,7 +22,7 @@ with types;
        }
     )
 
-    (mkIf (!cfg.pipewire.enable)
+    (mkIf (!cfg.audio.pipewire.enable)
       {
         sound.enable = true;
         hardware.pulseaudio = {

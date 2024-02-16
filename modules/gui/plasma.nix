@@ -38,7 +38,7 @@ with types;
         ];
       }
     )
-    (mkIf cfg.plasma.enable
+    (mkIf cfg.plasma.kdeconnect
       {
         environment.systemPackages = with pkgs; with libsForQt5; [
           kdeconnect
