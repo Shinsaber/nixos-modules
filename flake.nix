@@ -9,6 +9,7 @@
       terminal = import ./modules/terminal;
       tools    = import ./modules/tools;
       users    = import ./modules/users;
+      server   = import ./modules/server;
     };
   };
 }

@@ -15,6 +15,7 @@
     ms-vscode-remote.remote-ssh
     # It helps you to easily access your projects, no matter where they are located. Don't miss those important projects anymore.
     alefragnani.project-manager
+    davidlday.languagetool-linter
 
     #ms-toolsai.jupyter
     #johnpapa.vscode-peacock

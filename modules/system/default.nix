@@ -7,11 +7,29 @@ with types;
 
 {
   options.custom.system = {
+    vaapi = mkEnableOption "Hardware Accelerators";
     docker = mkEnableOption "Install docker in the systeme";
     batterysave = mkEnableOption "Activate systemd disable service on battery";
   };
 
   config = mkMerge [
+    (mkIf cfg.vaapi {
+      # 1. enable vaapi on OS-level
+      nixpkgs.config.packageOverrides = pkgs: {
+        vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+      };
+      hardware.opengl = {
+        enable = true;
+        extraPackages = with pkgs; [
+          intel-media-driver
+          vaapiIntel
+          vaapiVdpau
+          libvdpau-va-gl
+          intel-compute-runtime # OpenCL filter support (hardware tonemapping and subtitle burn-in)
+        ];
+      };
+    })
+
     (mkIf cfg.batterysave {
       systemd.targets.ac = {
         description = "On AC power";
