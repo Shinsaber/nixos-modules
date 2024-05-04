@@ -1,0 +1,262 @@
+// -------------------------------- Assets ---------------------------------- //
+global.title.text            = "Citeos Solution Digital";
+global.defaults.font.default = "Noto Sans 16";
+global.defaults.font.title   = "Noto Sans 21";
+global.xSize                 = Window.GetWidth ();
+global.ySize                 = Window.GetHeight();
+global.yPos                  = ( 2/6 );
+global.status                = "normal";
+global.prompt_active         = 0; // are we currently prompting for a password?
+
+Window.SetX(500);
+
+global.thicknessProgressBar = 5;
+global.backfade = ( 3/20 );
+global.assets = [];
+asset.scale = 1;
+
+asset.logo   = "images/logo.png";
+asset.static = "images/static.png";
+for (i = 0; i < 10; i++) {
+	asset.images[i] = "images/" + (i + 1) + ".png";
+}
+
+if (Plymouth.GetMode () == "shutdown")
+{
+    yPos = 0.5;
+}
+
+Color = fun(red, green, blue) {
+    local.color = [];
+    color.red = red;
+    color.green = green;
+    color.blue = blue;
+    return color | global.Color;
+} | [];
+
+global.colors = [];
+colors.black          = Color(0.0000, 0.0000, 0.0000);
+colors.plasma_blue    = Color(0.2392, 0.6824, 0.9130);
+colors.paper_white    = Color(0.9882, 0.9882, 0.9882);
+colors.charcoal_grey  = Color(0.1922, 0.2118, 0.2314);
+colors.cardboard_grey = Color(0.9373, 0.9412, 0.9451);
+colors.neon_blue      = Color(0.1608, 0.5020, 0.7255);
+colors.neon_green     = Color(0.1020, 0.7373, 0.6118);
+colors.citeos_orange  = Color(0.9600, 0.5000, 0.1300);
+colors.citeos_bordeau = Color(0.6200, 0.0400, 0.3000);
+
+global.palette = [];
+palette.text.normal = colors.citeos_orange;
+palette.text.tinted = colors.citeos_bordeau;
+palette.text.action = colors.cardboard_grey;
+palette.text.contrast = colors.charcoal_grey; // Inverse essentially
+
+// ------------------------------- Classes ---------------------------------- //
+
+ImageLogo = fun(asset) {
+    local.image  = Image(asset);
+    image        = image.Scale(120, 120);
+    return image | global.ImageLogo;
+} | Image;
+
+SpriteImage = fun(image) {
+    local.sprite  = Sprite();
+    sprite.image  = image.Scale( image.GetWidth() * asset.scale , image.GetHeight() * asset.scale );
+    sprite.width  = sprite.image.GetWidth();
+    sprite.height = sprite.image.GetHeight();
+    sprite.SetImage(sprite.image);
+    sprite.SetX ( ( xSize / 2 )    - ( sprite.width  / 2 ) );
+    sprite.SetY ( ( ySize * yPos ) - ( sprite.height / 2 ) );
+    return sprite | global.SpriteImage;
+} | Sprite;
+
+SpriteImage.Rotate = fun(rotation) {
+    local.tmpImage = this.image.Rotate(rotation);
+    this.SetImage(tmpImage);
+};
+
+SpriteImage.Scale = fun(ratio) {
+    this.image  = this.image.Scale(this.width * ratio, this.height * ratio);
+    this.width  = this.image.GetWidth();
+    this.height = this.image.GetHeight();
+    this.SetX ( ( xSize / 2 ) - ( this.width  / 2 ) );
+    this.SetImage(this.image);
+};
+
+SpriteImage.NewImage = fun(image_) {
+    this.image  = image_;
+    this.width  = this.image.GetWidth();
+    this.height = this.image.GetHeight();
+    this.SetX ( ( xSize / 2 ) - ( this.width  / 2 ) );
+    this.SetImage(this.image);
+};
+
+/**
+ * General purpose function to create an image from a string.
+ * \param text the string to print
+ * \param color the color the string should use in the image
+ * \returns Image containg the text
+ */
+fun WriteText(text, color, font) {
+  if (!color) {
+    color = palette.text.normal;
+  }
+  if (!font) {
+    font = defaults.font.default;
+  }
+  return Image.Text(text, color.red, color.green, color.blue, 1,  font);
+}
+
+String.ToImage = fun(color, font) {
+  return WriteText(this, color, font);
+};
+
+// ------------------------------- Sprite ---------------------------------- //
+
+Window.SetBackgroundTopColor    ((0.6200 * backfade), (0.0400 * backfade), (0.3000 * backfade));
+Window.SetBackgroundBottomColor ((0.9600 * backfade), (0.5000 * backfade), (0.1300 * backfade));
+
+Logo = SpriteImage(ImageLogo(asset.logo));
+
+iStatic = Image(asset.static);
+iStatic = iStatic.Scale (iStatic.GetWidth() * 0.3 , iStatic.GetHeight() * 0.3 );
+Static  = SpriteImage(iStatic);
+
+iTitle   = title.text.ToImage(palette.text.normal, defaults.font.title);
+Title    = SpriteImage(iTitle);
+Title.SetY ( (ySize * yPos) + (Static.height) );
+
+for (j = 0; j < 10; j++) {
+    Image[j] = SpriteImage(Image(asset.images[j]));
+}
+
+// ------------------------------- Animation ---------------------------------- //
+
+t=0;
+
+fun refresh_callback ()
+{
+    t++;
+    Image[0].Rotate(t * 0.009 );
+    Image[1].Rotate(t * 0.007 );
+    Image[2].Rotate(t * 0.006 );
+    Image[3].Rotate(t * 0.0053);
+    Image[4].Rotate(t * 0.0048);
+    Image[5].Rotate(t * 0.004 );
+    Image[6].Rotate(t * 0.0035);
+    Image[7].Rotate(t * 0.003 );
+    Image[8].Rotate(t * 0.0025);
+    Image[9].Rotate(t * 0.002 );
+
+    #Logo.SetOpacity( Math.Max( ( (Math.Cos(t * 0.05) + 1) / 2 ), 0.1 ) );
+}
+
+#Plymouth.SetRefreshRate (60);
+Plymouth.SetRefreshFunction (refresh_callback);
+
+#----------------------------------------- Progress Bar --------------------------------
+if (Plymouth.GetMode () == "boot")
+{
+    iProgressBar = Image ("images/pb.png");
+    iProgressBar = iProgressBar.Scale (1 , thicknessProgressBar);
+    ProgressBar  = Sprite (iProgressBar);
+    ProgressBar.SetX ( ( Window.GetWidth() / 2 ) - ( Title.width / 2 ) );
+    ProgressBar.SetY ( ( ySize * yPos ) + Static.height + Title.height + thicknessProgressBar );
+
+    fun progress_callback (duration, progress)
+    {
+        ProgressBar.SetImage(iProgressBar.Scale ( progress * Title.width, thicknessProgressBar));
+    }
+    Plymouth.SetBootProgressFunction(progress_callback);
+}
+
+#----------------------------------------- Display Password stuff -----------------------#
+
+fun password_dialog_setup (message_label) {
+
+    local.keyboard_image = Image("images/keyboard.png").Scale(50, 50);
+    local.capslock_image = Image("images/capslock.png").Scale(50, 50);
+
+    # Set the prompt label
+    iLabel      = message_label.ToImage(palette.text.action, defaults.font.default);
+    local.Label = SpriteImage(iLabel);
+    Label.SetY ( ( ySize * (2/3) ) - ( Label.height / 2 ) );
+    Label.SetZ (10000);
+
+    # Set input indicator
+    local.Keyboard = SpriteImage(keyboard_image);
+    Keyboard.SetY ( ( ySize * (2/3) ) + Label.height );
+    Keyboard.SetZ (10001);
+    
+    local.Capslock = SpriteImage(capslock_image);
+    Capslock.SetY ( ( ySize * (2/3) ) - Label.height - Capslock.height );
+    Capslock.SetZ (10002);
+
+    # Hide the normal labels
+    prompt_active = 1;
+    ProgressBar.SetOpacity(0);
+
+    global.password_dialog = local;
+}
+
+# The callback function is called when the display should display a password dialog.
+# First arg is prompt string, the second is the number of bullets.
+fun display_password_callback (prompt, bullets) {
+    status = "password";
+    if (!global.password_dialog)
+        password_dialog_setup(prompt);
+    else 
+      if (!prompt_active) {
+            prompt_active = 1;
+            ProgressBar.SetOpacity(0);
+            password_dialog.Label.SetOpacity(1);
+            password_dialog.Keyboard.SetOpacity(1);
+            password_dialog.Keyboard.Scale(2);
+        }
+
+    if (Plymouth.GetCapslockState())
+        password_dialog.Capslock.SetOpacity(1);
+    else
+        password_dialog.Capslock.SetOpacity(0);
+
+    password_dialog.Keyboard.Rotate( bullets * ( 3.1415 / ( (bullets % 5) +1 ) ) );
+}
+
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+
+#----------------------------------------- Display Normal -----------------------#
+
+fun display_normal_callback () {
+    status = "normal";
+    if (prompt_active)
+        password_dialog.Label.SetOpacity(0);
+        password_dialog.Keyboard.SetOpacity(0);
+        password_dialog.Capslock.SetOpacity(0);
+        prompt_active = 0;
+    
+    ProgressBar.SetOpacity(1);
+}
+
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
+
+#----------------------------------------- Display Message -----------------------#
+
+iMessage = WriteText( "Default message", colors.citeos_bordeau, defaults.font.default );
+Message = SpriteImage(iMessage);
+Message.SetY ( ySize - 50 );
+Message.SetOpacity(0);
+
+fun display_message_callback (text)
+{
+  Message.NewImage( text.ToImage( colors.neon_blue, defaults.font.default ) );
+  Message.SetOpacity(1);
+}
+
+fun hide_message_callback (text)
+{
+  Message.NewImage( text.ToImage( colors.citeos_bordeau, defaults.font.default ) );
+  Message.SetOpacity(0);
+}
+
+Plymouth.SetDisplayMessageFunction (display_message_callback);
+Plymouth.SetHideMessageFunction (hide_message_callback);

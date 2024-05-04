@@ -1,0 +1,9 @@
+[Plymouth Theme]
+Name=Vortex Citeos
+Description=Citeos logo with spinning colored stripes
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/citeos-vortex
+ScriptFile=/usr/share/plymouth/themes/citeos-vortex/citeos-vortex.script
+UseFirmwareBackground=false

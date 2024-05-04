@@ -1,11 +1,11 @@
 { config, lib, pkgs, ... }:
 
-let cfg = config.custom.server;
+let cfg = config.shincraft.server;
 in
 with lib;
 with types;
 {
-  options.custom.server = {
+  options.shincraft.server = {
     jellyfin = mkEnableOption "Install jellyfin in the systeme";
     transmission = {
       enable = mkEnableOption "Install transmission torrent client";
@@ -19,7 +19,7 @@ with types;
 
   config = mkMerge [
     (mkIf cfg.jellyfin {
-      custom.system.vaapi = mkDefault true;
+      shincraft.system.vaapi = mkDefault true;
       environment.systemPackages = [
         pkgs.jellyfin
         pkgs.jellyfin-web
