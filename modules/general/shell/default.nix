@@ -4,6 +4,7 @@
   [
     ./zsh
     ./vim
+    ./nvim
     ./packages.nix
   ];
 }

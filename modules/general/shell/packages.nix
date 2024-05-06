@@ -12,6 +12,7 @@
     wget
     vim
     git
+    jq
     delta
     bat
     sshfs

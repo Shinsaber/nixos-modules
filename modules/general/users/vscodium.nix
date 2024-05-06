@@ -11,6 +11,8 @@
     # Nix file code
     bbenoist.nix
     jnoortheen.nix-ide
+    # Java
+    redhat.java
     # The Remote - SSH extension lets you use any remote machine with a SSH server as your development environment. This can greatly simplify development and troubleshooting in a wide variety of situations.
     ms-vscode-remote.remote-ssh
     # It helps you to easily access your projects, no matter where they are located. Don't miss those important projects anymore.

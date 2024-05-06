@@ -137,7 +137,7 @@ in
         ssh = (mkIf cfg.home-config.ssh.enable {
           enable = true;
           compression = true;
-          controlMaster = "yes";
+          controlMaster = "auto";
           controlPersist = "10m";
           #hashKnownHost = false;
           matchBlocks = cfg.home-config.ssh.listAlias;

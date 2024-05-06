@@ -6,6 +6,10 @@ with lib;
 with types;
 
 {
+  imports = [
+    ./splash
+  ];
+
   config = mkMerge [
     (mkIf cfg.nix.autoUpgrade {
       system = {
