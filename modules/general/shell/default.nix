@@ -1,10 +1,17 @@
-{...}:
+{config, lib, packages, ...}:
+let
+  cfg = config.shincraft.shell.nvim;
+in
+with lib;
 {
   imports =
   [
     ./zsh
     ./vim
-    ./nvim
     ./packages.nix
   ];
+
+  config = (mkIf cfg.enable {
+    environment.systemPackages = [packages.nvim];
+  });
 }

@@ -1,4 +1,4 @@
-{
+ {
   description = "shinsaber-nixos-modules";
 
   inputs = {
@@ -12,14 +12,24 @@
     };
   };
 
-  outputs = { nixos, home-manager, nixvim, ... }: {
-    nixos        = nixos;
+  outputs = { self, nixos, home-manager, nixvim, ... }: 
+  let
+    system = "x86_64-linux";
+    nixvim' = nixvim.legacyPackages.${system};
+    nixvimModule = {
+      module = import ./packages/nvim;
+    };
+    nvim = nixvim'.makeNixvimWithModule nixvimModule;
+  in
+  {
+    nixos = nixos;
+    packages.${system}.nixvim = nvim;
     nixosModules = {
       general  = {
         imports = [
           ./modules/general
-          nixvim.nixosModules.nixvim
           home-manager.nixosModules.home-manager
+          {_module.args.packages = { inherit nvim; }; }
         ];
       };
       server   = import ./modules/server;
