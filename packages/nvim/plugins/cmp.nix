@@ -1,14 +1,12 @@
 {
-  # LSP config
-  plugins.lsp = {
-    enable = true;
-    servers = {
-      nil_ls.enable = true;
-      bashls.enable = true;
-      dockerls.enable = true;
-      docker-compose-language-service.enable = true;
-      helm-ls.enable = true;
+  # CMP config
+  plugins = {
+    cmp = {
+      enable = true;
     };
+    cmp-nvim-lsp.enable = true;
+    cmp-buffer.enable = true;
+    cmp-treesitter.enable = true;
   };
   #plugins.which-key.registrations."<leader>f" = {name = "Telescope find";};
   colorschemes.onedark.settings.highlights = {

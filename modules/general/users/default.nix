@@ -48,7 +48,7 @@ in
           #kubernetes-helm
           (wrapHelm kubernetes-helm {
             plugins = with pkgs.kubernetes-helmPlugins; [
-              helm-secrets
+              #helm-secrets
               helm-diff
               helm-git
             ];

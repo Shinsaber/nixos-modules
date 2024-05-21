@@ -48,4 +48,6 @@ mkMerge [
 
   (import ./plugins/telescope.nix)
   (import ./plugins/lsp.nix)
+  (import ./plugins/cmp.nix)
+  (import ./plugins/treesitter.nix)
 ]
