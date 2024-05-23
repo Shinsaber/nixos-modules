@@ -32,7 +32,7 @@
           {_module.args.packages = { inherit nvim; }; }
         ];
       };
-      server   = import ./modules/server;
+      server   = import ./modules/server; 
     };
   };
 }

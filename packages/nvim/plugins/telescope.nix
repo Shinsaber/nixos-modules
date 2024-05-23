@@ -23,7 +23,7 @@
       };
     };
   };
-  plugins.which-key.registrations."<leader>f" = {name = "Telescope find";};
+
   colorschemes.onedark.settings.highlights = {
     # https://github.com/nvim-telescope/telescope.nvim/blob/fac83a556e7b710dc31433dec727361ca062dbe9/plugin/telescope.lua#L11
     # Sets the highlight for selected items within the picker.
@@ -49,7 +49,18 @@
     # Used for highlighting characters that you match.
     TelescopeMatching = { fg = "$dark_purple"; fmt = "bold"; };
   };
+
+  plugins.which-key.registrations."<leader>f" = {name = "Telescope find";};
+  plugins.which-key.registrations."<leader>g" = {name = "Telescope Git";};
   keymaps = [
+    {
+      key = "<leader>fd";
+      action = "<cmd>Telescope find_browser<cr>";
+      options= {
+        silent = false;
+        desc = "File Browser";
+      };
+    }
     {
       key = "<leader>ff";
       action = "<cmd>Telescope find_files<cr>";
@@ -71,7 +82,7 @@
       action = "<cmd>Telescope buffers<cr>";
       options = {
         silent = false;
-        desc = "Telescope buffers";
+        desc = "Buffers";
       };
     }
     {
@@ -79,7 +90,39 @@
       action = "<cmd>Telescope help_tags<cr>";
       options = {
         silent = false;
-        desc = "Telescope help_tags";
+        desc = "Help Tags";
+      };
+    }
+    {
+      key = "<leader>gc";
+      action = "<cmd>Telescope git_commits<cr>";
+      options = {
+        silent = false;
+        desc = "Lists all commit";
+      };
+    }
+    {
+      key = "<leader>gb";
+      action = "<cmd>Telescope git_branches<cr>";
+      options = {
+        silent = false;
+        desc = "Lists all branches";
+      };
+    }
+    {
+      key = "<leader>gs";
+      action = "<cmd>Telescope git_status<cr>";
+      options = {
+        silent = false;
+        desc = "Lists current changes";
+      };
+    }
+    {
+      key = "<leader>gS";
+      action = "<cmd>Telescope git_stash<cr>";
+      options = {
+        silent = false;
+        desc = "Lists stash";
       };
     }
   ];

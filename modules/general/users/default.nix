@@ -45,6 +45,7 @@ in
           kubecolor
           kubectx
           kube-bench
+          stern
           #kubernetes-helm
           (wrapHelm kubernetes-helm {
             plugins = with pkgs.kubernetes-helmPlugins; [
