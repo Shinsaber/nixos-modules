@@ -61,7 +61,6 @@ mkMerge [
       };
       # Indent-O-matic
       indent-o-matic.enable = true;
-      fugitive.enable = true;
     };
   }
 

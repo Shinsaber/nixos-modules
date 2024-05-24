@@ -24,6 +24,8 @@
     };
   };
 
+  plugins.fugitive.enable = true;
+
   colorschemes.onedark.settings.highlights = {
     # https://github.com/nvim-telescope/telescope.nvim/blob/fac83a556e7b710dc31433dec727361ca062dbe9/plugin/telescope.lua#L11
     # Sets the highlight for selected items within the picker.
@@ -55,7 +57,7 @@
   keymaps = [
     {
       key = "<leader>fd";
-      action = "<cmd>Telescope find_browser<cr>";
+      action = "<cmd>Telescope file_browser<cr>";
       options= {
         silent = false;
         desc = "File Browser";
@@ -94,7 +96,7 @@
       };
     }
     {
-      key = "<leader>gc";
+      key = "<leader>gC";
       action = "<cmd>Telescope git_commits<cr>";
       options = {
         silent = false;
@@ -123,6 +125,30 @@
       options = {
         silent = false;
         desc = "Lists stash";
+      };
+    }
+    {
+      key = "<leader>gc";
+      action = "<cmd>Git commit<cr>";
+      options = {
+        silent = false;
+        desc = "Create new commit";
+      };
+    }
+    {
+      key = "<leader>gd";
+      action = "<cmd>Gvdiffsplit<cr>";
+      options = {
+        silent = false;
+        desc = "Show curent diff";
+      };
+    }
+    {
+      key = "<leader>gD";
+      action = ":Gvdiffsplit ";
+      options = {
+        silent = false;
+        desc = "Ask for diff";
       };
     }
   ];
