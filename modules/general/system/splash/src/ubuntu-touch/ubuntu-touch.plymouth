@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=ubuntu-touch
+Description=A theme that features a color-cycled background ala Windows.
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/ubuntu-touch
+ScriptFile=/usr/share/plymouth/themes/ubuntu-touch/ubuntu-touch.script
