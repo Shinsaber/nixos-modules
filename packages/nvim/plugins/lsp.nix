@@ -5,7 +5,7 @@
     lsp = {
       enable = true;
       servers = {
-        nil_ls = {
+        nil-ls = {
           enable = true;
           settings.formatting.command = [ "${pkgs.nixpkgs-fmt}/bin/nixpkgs-fmt" ];
         };

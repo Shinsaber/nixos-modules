@@ -10,12 +10,10 @@ with types;
     (mkIf cfg.plasma.enable
       {
         services = {
-          xserver = {
-            desktopManager.plasma5.enable = true;
-            displayManager.sddm = {
-              enable = true;
-              wayland.enable = true;
-            };
+          desktopManager.plasma6.enable = true;
+          displayManager.sddm = {
+            enable = true;
+            wayland.enable = true;
           };
         };
 

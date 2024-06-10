@@ -89,7 +89,7 @@ in
             theme_background = false;
           };
         };
-        vscode = (mkIf cfg.home-config.vscode.enable vscodeConfig);
+        #vscode = (mkIf cfg.home-config.vscode.enable vscodeConfig);
         git = (mkIf cfg.home-config.git.enable {
           # package = pkgs.gitAndTools.gitFull;
           enable = cfg.home-config.git.enable;
@@ -143,9 +143,9 @@ in
           #hashKnownHost = false;
           matchBlocks = cfg.home-config.ssh.listAlias;
         });
-        chromium = (mkIf cfg.home-config.chromium.enable {
-          enable = true;
-        });
+        #chromium = (mkIf cfg.home-config.chromium.enable {
+        #  enable = true;
+        #});
       };
 
       # This value determines the Home Manager release that your
