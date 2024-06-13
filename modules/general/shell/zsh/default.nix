@@ -78,6 +78,9 @@ with types;
         };
       };
       environment.etc.zshrc.text = ''
+        alias kubectl=kubecolor
+        # make completion work with kubecolor
+        compdef kubecolor=kubectl
         source ${./zshrc.sh}
       '';
 
