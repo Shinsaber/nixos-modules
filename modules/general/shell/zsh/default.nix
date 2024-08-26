@@ -21,6 +21,8 @@ with types;
         bat
         ripgrep
         fzf
+        libnotify
+        difftastic
       ];
       programs.zsh = {
         enable = true;

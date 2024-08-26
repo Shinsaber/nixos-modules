@@ -20,20 +20,19 @@ with types;
         environment.sessionVariables.NIXOS_OZONE_WL = "1";
         services = {
           xserver = {
-            enable = true;
-            layout = "fr";
-            xkbVariant = "bepo";
-
-            # Enable touchpad support
-            libinput = {
-              enable = true;
-              touchpad.disableWhileTyping = true;
-            };
+            xkb.layout = "fr";
+            xkb.variant = "bepo";
           };
 
           unclutter = {
             enable = true;
             timeout = 5;
+          };
+
+          # Enable touchpad support
+          libinput = {
+            enable = true;
+            touchpad.disableWhileTyping = true;
           };
         };
 

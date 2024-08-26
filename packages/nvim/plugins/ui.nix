@@ -149,15 +149,15 @@
       action = "<C-w>s";
       options = {
         silent = true;
-        desc = "";
+        desc = "Split current window horizontally";
       };
     }
     {
-      key = "<C-t>";
-      action = "<C-w>t";
+      key = "<C-v>";
+      action = "<C-w>v";
       options = {
         silent = true;
-        desc = "";
+        desc = "Split current window vertically";
       };
     }
     {

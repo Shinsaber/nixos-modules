@@ -26,6 +26,11 @@ for ft in $_editor_fts; do alias -s $ft=$EDITOR; done
 _media_fts=(ape avi flv m4a mkv mp4 mov mp3 mpeg mpg ogg ogm rm wav webm)
 for ft in $_media_fts; do alias -s $ft=mpv; done
 
+# Add docker to list of ignored commands
+AUTO_NOTIFY_IGNORE+=(
+  "docker"
+  "ga"
+)
 
 #auto_notify_ignore+=(
 #  'ga'

@@ -98,8 +98,9 @@ in
       };
     };
     shell = {
-      vim.enable  = mkEnableOption "Activate Vim advenced config";
-      nvim.enable = mkEnableOption "Activate NeoVim advenced config";
+      vim.enable    = mkEnableOption "Activate Vim advenced config";
+      nixvim.enable = mkEnableOption "Activate NeoVim advenced config";
+      tmux.enable   = mkEnableOption "Activate tmux advenced config";
       zsh = {
         enable = mkEnableOption "Activate ZSH as default shell";
         powerlevel10k = {

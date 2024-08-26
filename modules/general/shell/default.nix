@@ -1,6 +1,6 @@
 {config, lib, packages, ...}:
 let
-  cfg = config.shincraft.shell.nvim;
+  cfg = config.shincraft.shell;
 in
 with lib;
 {
@@ -8,10 +8,11 @@ with lib;
   [
     ./zsh
     ./vim
+    ./tmux
     ./packages.nix
   ];
 
-  config = (mkIf cfg.enable {
-    environment.systemPackages = [packages.nvim];
+  config = (mkIf cfg.nixvim.enable {
+    environment.systemPackages = [packages.nixvim];
   });
 }

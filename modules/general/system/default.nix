@@ -27,7 +27,10 @@ with types;
     (mkIf cfg.nix.optiStore {
       nix = {
         # Auto cleanups
-        settings.auto-optimise-store = true;
+        settings = {
+          auto-optimise-store = true;
+          experimental-features = "nix-command flakes";
+        };
         gc = {
           automatic = true;
           dates = "13:00";

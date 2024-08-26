@@ -18,6 +18,7 @@ with types;
           pdfsam-basic
           pdfslicer
           keepassxc
+          alacritty
 
           clementine
           vlc

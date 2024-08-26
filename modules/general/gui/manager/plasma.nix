@@ -10,12 +10,10 @@ with types;
     (mkIf cfg.plasma.enable
       {
         services = {
-          xserver = {
-            desktopManager.plasma5.enable = true;
-            displayManager.sddm = {
-              enable = true;
-              wayland.enable = true;
-            };
+          desktopManager.plasma6.enable = true;
+          displayManager.sddm = {
+            enable = true;
+            wayland.enable = true;
           };
         };
 
@@ -24,7 +22,8 @@ with types;
           kcoreaddons
           #libsForQt5
           kio
-          kile texlive.combined.scheme-full
+          kile
+          texlive.combined.scheme-full
           dolphin
           dolphin-plugins
           ark
@@ -40,17 +39,7 @@ with types;
     )
     (mkIf cfg.plasma.kdeconnect
       {
-        environment.systemPackages = with pkgs; with libsForQt5; [
-          kdeconnect
-        ];
-        networking.firewall = {
-          allowedTCPPortRanges = [{
-            from = 1714; to = 1764;
-          }];
-          allowedUDPPortRanges = [{
-            from = 1714; to = 1764;
-          }];
-        };
+        programs.kdeconnect.enable = true;
       }
     )
   ];

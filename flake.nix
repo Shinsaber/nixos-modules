@@ -3,8 +3,8 @@
 
   inputs = {
     nix-unstable.url = "nixpkgs/nixos-unstable";
-    nixos.url = "nixpkgs/nixos-23.11";
-    home-manager.url = "github:rycee/home-manager/release-23.11";
+    nixos.url = "nixpkgs/nixos-24.05";
+    home-manager.url = "github:nix-community/home-manager/release-24.05";
     nixvim = {
       url = "github:nix-community/nixvim";
       # If using a stable channel you can use `url = "github:nix-community/nixvim/nixos-<version>"`
@@ -29,7 +29,7 @@
           imports = [
             ./modules/general
             home-manager.nixosModules.home-manager
-            { _module.args.packages = { inherit nvim; }; }
+            { _module.args.packages = { nixvim = nvim; }; }
           ];
         };
         server = import ./modules/server;
