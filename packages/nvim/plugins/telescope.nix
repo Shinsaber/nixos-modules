@@ -52,8 +52,17 @@
     TelescopeMatching = { fg = "$dark_purple"; fmt = "bold"; };
   };
 
-  plugins.which-key.registrations."<leader>f" = { name = "Telescope find"; };
-  plugins.which-key.registrations."<leader>g" = { name = "Telescope Git"; };
+    plugins.which-key.settings.spec = [
+    {
+      __unkeyed = "<leader>f";
+      group     = "Telescope find";
+    }
+    {
+      __unkeyed = "<leader>g";
+      group     = "Telescope Git";
+    }
+  ];
+
   keymaps = [
     {
       key = "<leader>fd";

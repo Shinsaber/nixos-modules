@@ -57,7 +57,12 @@
     };
   };
 
-  plugins.which-key.registrations."<leader>h" = {name = "Highlight";};
+  plugins.which-key.settings.spec = [
+    {
+      __unkeyed = "<leader>h";
+      group     = "Highlight";
+    }
+  ];
   colorschemes.onedark.settings.highlights = {
     #TelescopeMultiIcon      = { fg = "$black"; bg = "$black"; fmt = "bold"; };
   };

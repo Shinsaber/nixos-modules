@@ -74,6 +74,12 @@
         version = "0.7.64";
         sha256 = "sha256-spZZOgdnx9GWKv1VjbTSAUYX3D64AzQO4jhHtmQ42ck=";
       }
+      {
+        name = "kotlin";
+        publisher = "fwcd";
+        version = "0.2.35";
+        sha256 = "sha256-UyiMacHjs8tbziQzrGlP5A+OSNuzIij1yFBTRuM6qmM=";
+      }
   ];
   userSettings = {
     files.autoSave = "off";
@@ -95,6 +101,8 @@
     editor = {
       formatOnSave = true;
       tabSize = 2;
+      fontFamily = "'FiraCode Nerd Font', 'Droid Sans Mono', 'monospace', monospace";
+      defaultFormatter = "esbenp.prettier-vscode";
       bracketPairColorization = {
         enabled = true;
         independentColorPoolPerBracketType = false;
@@ -121,6 +129,9 @@
     ];
     continue.telemetryEnabled = false;
     redhat.telemetry.enabled = false;
+    "[json]" = {
+      "editor.defaultFormatter" = "esbenp.prettier-vscode";
+    };
   };
   userTasks = {
     #version = "2.0.0";

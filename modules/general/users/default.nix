@@ -66,7 +66,7 @@ in
           openlens
         ])
         (mkIf ( cfg.home-config.database.enable && config.shincraft.gui.enable ) [
-          dbeaver
+          dbeaver-bin
         ])
         (mkIf cfg.home-config.nodejs.enable [
           nodejs
@@ -81,6 +81,7 @@ in
       ];
 
       programs = {
+        java.enable = cfg.home-config.java.enable;
         btop = {
           enable = true;
           settings = {

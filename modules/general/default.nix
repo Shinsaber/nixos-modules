@@ -29,6 +29,7 @@ let
         chromium.enable = mkEnableOption "Enable Chromium Browser";
         kube.enable     = mkEnableOption "Install tools for managing kube cluster";
         nodejs.enable   = mkEnableOption "Install yarn";
+        java.enable     = mkEnableOption "Install Java tool";
         database.enable = mkEnableOption "Install tools for database work";
         ssh = {
           enable    = mkOption {

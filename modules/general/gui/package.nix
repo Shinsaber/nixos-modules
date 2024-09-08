@@ -25,7 +25,6 @@ with types;
           mpv
           #mplayer
           smplayer
-          youtube-dl
           yt-dlp
 
           wine
