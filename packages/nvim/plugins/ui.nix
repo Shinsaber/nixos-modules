@@ -8,12 +8,12 @@
     # This is a VS Code like winbar
     barbecue = {
       enable = true;
-      contextFollowIconColor = true;
+      settings.context_follow_icon_color = true;
     };
     # Botome info bar
     lualine = {
       enable = true;
-      globalstatus = true;
+      settings.options.globalstatus = true;
     };
 
     # Which-key config

@@ -31,26 +31,19 @@
     esbenp.prettier-vscode
     # This extension integrates GitLab into Visual Studio Code.
     gitlab.gitlab-workflow
+    hediet.vscode-drawio
 
     #vscodevim.vim
     redhat.vscode-yaml
-    # Java
-    redhat.java
 
   ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-      {
-        name = "vscode-drawio";
-        publisher = "hediet";
-        version = "1.6.6";
-        sha256 = "sha256-SPcSnS7LnRL5gdiJIVsFaN7eccrUHSj9uQYIQZllm0M=";
-      }
       # Puts a small, bored cat, an enthusiastic dog, a feisty snake, a rubber duck, or Clippy 📎 in your code editor.
       #tonybaloney.vscode-pets
       {
         name = "vscode-pets";
         publisher = "tonybaloney";
-        version = "1.25.1";
-        sha256 = "sha256-as3e2LzKBSsiGs/UGIZ06XqbLh37irDUaCzslqITEJQ=";
+        version = "1.27.0";
+        sha256 = "sha256-ZWJW5Y2jzJlTgnys2GF+5tDBEsn3yZUqlGeYwwBf9zo=";
       }
       # Dendron is an open-source, local-first, markdown-based, note-taking tool.
       {
