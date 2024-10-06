@@ -24,7 +24,7 @@
         eslint.enable = true;
         vuels.enable = true;
         elmls.enable = true;
-        tsserver.enable = true;
+        ts-ls.enable = true;
         rust-analyzer = {
           enable = true;
           installCargo = true;

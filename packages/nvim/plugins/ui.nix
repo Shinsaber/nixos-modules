@@ -1,5 +1,6 @@
 {
   plugins = {
+    web-devicons.enable = true;
     tmux-navigator.enable = true;
     # Tabs, as understood by any other editor.
     barbar = {

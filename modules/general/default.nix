@@ -62,7 +62,7 @@ let
   };
 in
 {
-    imports = [
+  imports = [
     ./gui
     ./system
     ./shell
