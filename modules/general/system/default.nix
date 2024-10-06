@@ -29,7 +29,6 @@ with types;
         # Auto cleanups
         settings = {
           auto-optimise-store = true;
-          experimental-features = "nix-command flakes";
         };
         gc = {
           automatic = true;
@@ -97,5 +96,12 @@ with types;
         partOf = [ "ac.target" ];
       };
     })
+
+    ({ nix = {
+        # Auto cleanups
+        settings = {
+          experimental-features = "nix-command flakes";
+        };
+    }; })
   ];
 }
