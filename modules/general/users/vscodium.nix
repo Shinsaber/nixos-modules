@@ -61,12 +61,12 @@
       #dendron.dendron-markdown-shortcuts
       # https://marketplace.visualstudio.com/items?itemName=Continue.continue
       # Open-source autopilot for software development - bring the power of ChatGPT to your IDE
-      #{
-      #  name = "continue";
-      #  publisher = "Continue";
-      #  version = "0.7.64";
-      #  sha256 = "sha256-spZZOgdnx9GWKv1VjbTSAUYX3D64AzQO4jhHtmQ42ck=";
-      #}
+      {
+        name = "continue";
+        publisher = "Continue";
+        version = "0.9.217";
+        sha256 = "sha256-34yTYm2s8H8BVGMJNIuDxbjRuYrBJZ330LRMWUJqyWg=";
+      }
       {
         name = "kotlin";
         publisher = "fwcd";
