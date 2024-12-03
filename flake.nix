@@ -32,7 +32,12 @@
             { _module.args.packages = { nixvim = nvim; }; }
           ];
         };
-        server = import ./modules/server;
+        server = {
+          imports = [
+            ./packages
+            ./modules/server
+          ];
+        };
       };
     };
 }
