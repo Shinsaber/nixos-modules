@@ -49,8 +49,9 @@ with types;
           fd = "find . -type d -name";
           ff = "find . -type f -name";
 
-          kctx = "kubectx";
-          kns  = "kubens";
+          kctx    = "kubectx";
+          kns     = "kubens";
+          kubectl = "kubecolor";
         };
 
         ohMyZsh = {
