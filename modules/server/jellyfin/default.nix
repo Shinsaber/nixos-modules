@@ -32,9 +32,10 @@ with types;
     })
     (mkIf cfg.transmission.enable {
       services.transmission = { 
-        enable      = true; #Enable transmission daemon
-        openRPCPort = true; #Open firewall for RPC
-        settings    = {     #Override default settings
+        enable        = true; #Enable transmission daemon
+        openRPCPort   = true; #Open firewall for RPC
+        openPeerPorts = true; #Open firewall for Peer Ports
+        settings      = {     #Override default settings
           rpc-bind-address = "0.0.0.0"; #Bind to own IP
           rpc-whitelist    = cfg.transmission.whitelist; #Whitelist your remote machine
         };
