@@ -5,7 +5,7 @@
     lsp = {
       enable = true;
       servers = {
-        nil-ls = {
+        nil_ls = {
           enable = true;
           settings.formatting.command = [ "${pkgs.nixpkgs-fmt}/bin/nixpkgs-fmt" ];
         };
@@ -15,17 +15,17 @@
         ansiblels.enable = true;
         terraformls.enable = true;
         dockerls.enable = true;
-        docker-compose-language-service.enable = true;
-        helm-ls.enable = true;
-        nginx-language-server.enable = true;
+        docker_compose_language_service.enable = true;
+        helm_ls.enable = true;
+        nginx_language_server.enable = true;
         # Prog
-        java-language-server.enable = true;
-        kotlin-language-server.enable = true;
+        java_language_server.enable = true;
+        kotlin_language_server.enable = true;
         eslint.enable = true;
-        vuels.enable = true;
+        vuels.enable = false;
         elmls.enable = true;
-        ts-ls.enable = true;
-        rust-analyzer = {
+        ts_ls.enable = true;
+        rust_analyzer = {
           enable = true;
           installCargo = true;
           installRustc = true;

@@ -30,64 +30,66 @@
 
     noice = {
       enable = true;
-      views = {
+      settings = {
+        views = {
+          cmdline = {
+            backend = "popup";
+            relative = "editor";
+            position = {
+              row = -1;
+              col = 2;
+            };
+            size = {
+              width = 60;
+              height = "auto";
+            };
+            border = {
+              style = "none";
+              padding = [ 0 2 ];
+            };
+            win_options = {
+              #winhighlight = "NormalFloat:RainbowRedD,FloatBorder:FloatBorder";
+              winhighlight = {
+                NormalFloat = "NoiceCmdlinePopup";
+                #Normal = "NoiceCmdline";
+                FloatTitle = "NoiceCmdlinePopupTitle";
+                #FloatBorder = "NoiceCmdlinePopupBorder";
+                #IncSearch   = "";
+                #CurSearch   = "";
+                Search = "NoiceCmdlinePopupSearch";
+              };
+            };
+          };
+          popupmenu = {
+            backend = "popup";
+            relative = "editor";
+            position = {
+              row = -2;
+              col = 0;
+            };
+            size = {
+              width = 56;
+              height = "auto";
+              max_height = 10;
+            };
+            border = {
+              style = "none";
+              padding = [ 0 4 ];
+            };
+            win_options = {
+              winhighlight = {
+                Normal = "NoicePopupmenu"; # change to NormalFloat to make it look like other floats
+                #FloatBorder = "NoicePopupmenuBorder"; # border highlight
+                CursorLine = "NoicePopupmenuSelected"; # used for highlighting the selected item
+                PmenuMatch = "NoicePopupmenuMatch"; # used to highlight the part of the item that matches the input
+              };
+            };
+          };
+        };
         cmdline = {
-          backend = "popup";
-          relative = "editor";
-          position = {
-            row = -1;
-            col = 2;
-          };
-          size = {
-            width = 60;
-            height = "auto";
-          };
-          border = {
-            style = "none";
-            padding = [ 0 2 ];
-          };
-          win_options = {
-            #winhighlight = "NormalFloat:RainbowRedD,FloatBorder:FloatBorder";
-            winhighlight = {
-              NormalFloat = "NoiceCmdlinePopup";
-              #Normal = "NoiceCmdline";
-              FloatTitle = "NoiceCmdlinePopupTitle";
-              #FloatBorder = "NoiceCmdlinePopupBorder";
-              #IncSearch   = "";
-              #CurSearch   = "";
-              Search = "NoiceCmdlinePopupSearch";
-            };
-          };
+          enabled = true;
+          view = "cmdline";
         };
-        popupmenu = {
-          backend = "popup";
-          relative = "editor";
-          position = {
-            row = -2;
-            col = 0;
-          };
-          size = {
-            width = 56;
-            height = "auto";
-            max_height = 10;
-          };
-          border = {
-            style = "none";
-            padding = [ 0 4 ];
-          };
-          win_options = {
-            winhighlight = {
-              Normal = "NoicePopupmenu"; # change to NormalFloat to make it look like other floats
-              #FloatBorder = "NoicePopupmenuBorder"; # border highlight
-              CursorLine = "NoicePopupmenuSelected"; # used for highlighting the selected item
-              PmenuMatch = "NoicePopupmenuMatch"; # used to highlight the part of the item that matches the input
-            };
-          };
-        };
-      };
-      cmdline = {
-        enabled = true;
-        view = "cmdline";
       };
     };
   };

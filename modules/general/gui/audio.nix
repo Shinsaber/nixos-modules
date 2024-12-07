@@ -10,7 +10,6 @@ with types;
   (mkMerge [
     (mkIf cfg.audio.pipewire.enable
        {
-         sound.enable = false;
          security.rtkit.enable = true;
          services.pipewire = {
            enable = true;
