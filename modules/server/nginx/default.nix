@@ -36,48 +36,49 @@ with types;
     };
   };
 
-  config = {
-    services.nginx = {
-      enable = true;
+  config = mkMerge [
+    (mkIf cfg.enable {
+      services.nginx = {
+        enable = true;
 
-      # Use recommended settings
-      recommendedGzipSettings = true;
-      recommendedOptimisation = true;
-      recommendedProxySettings = true;
-      recommendedTlsSettings = true;
+        # Use recommended settings
+        recommendedGzipSettings = true;
+        recommendedOptimisation = true;
+        recommendedProxySettings = true;
+        recommendedTlsSettings = true;
 
-      # Only allow PFS-enabled ciphers with AES256
-      sslCiphers = "AES256+EECDH:AES256+EDH:!aNULL";
-      
-      appendHttpConfig = ''
-        # Minimize information leaked to other domains
-        add_header 'Referrer-Policy' 'origin-when-cross-origin';
+        # Only allow PFS-enabled ciphers with AES256
+        sslCiphers = "AES256+EECDH:AES256+EDH:!aNULL";
+        
+        appendHttpConfig = ''
+          # Minimize information leaked to other domains
+          add_header 'Referrer-Policy' 'origin-when-cross-origin';
 
-        # Disable embedding as a frame
-        add_header X-Frame-Options DENY;
+          # Disable embedding as a frame
+          add_header X-Frame-Options DENY;
 
-        # Prevent injection of code in other mime types (XSS Attacks)
-        add_header X-Content-Type-Options nosniff;
-      '';
+          # Prevent injection of code in other mime types (XSS Attacks)
+          add_header X-Content-Type-Options nosniff;
+        '';
 
-      virtualHosts = listToAttrs ( flatten (
-        flip mapAttrsToList cfg.domain ( domain: domainConfig: 
-          flip mapAttrsToList domainConfig.proxy ( subdomain: config: 
-            { 
-              name = "${subdomain}.${domain}";
-              value = {
-                addSSL = true;
-                enableACME = true;
-                locations."/" = {
-                  proxyPass = "http://${config.host}:${config.port}";
-                  proxyWebsockets = true; # needed if you need to use WebSocket
+        virtualHosts = listToAttrs ( flatten (
+          flip mapAttrsToList cfg.domain ( domain: domainConfig: 
+            flip mapAttrsToList domainConfig.proxy ( subdomain: config: 
+              { 
+                name = "${subdomain}.${domain}";
+                value = {
+                  addSSL = true;
+                  enableACME = true;
+                  locations."/" = {
+                    proxyPass = "http://${config.host}:${config.port}";
+                    proxyWebsockets = true; # needed if you need to use WebSocket
+                  };
                 };
-              };
-            }
+              }
+            )
           )
-        )
-      ));
-
-    };
-  };
+        ));
+      };
+    })
+  ];
 }

@@ -22,7 +22,7 @@
         java_language_server.enable = true;
         kotlin_language_server.enable = true;
         eslint.enable = true;
-        #vuels.enable = true;
+        vuels.enable = false;
         elmls.enable = true;
         ts_ls.enable = true;
         rust_analyzer = {

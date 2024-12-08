@@ -3,8 +3,8 @@
 
   inputs = {
     nix-unstable.url = "nixpkgs/nixos-unstable";
-    nixos.url = "nixpkgs/nixos-24.05";
-    home-manager.url = "github:nix-community/home-manager/release-24.05";
+    nixos.url = "nixpkgs/nixos-24.11";
+    home-manager.url = "github:nix-community/home-manager/release-24.11";
     nixvim = {
       url = "github:nix-community/nixvim";
       # If using a stable channel you can use `url = "github:nix-community/nixvim/nixos-<version>"`
@@ -12,7 +12,7 @@
     };
   };
 
-  outputs = { self, nixos, home-manager, nixvim, ... }:
+  outputs = { self, nixos, nix-unstable, home-manager, nixvim, ... }:
     let
       system = "x86_64-linux";
       nixvim' = nixvim.legacyPackages.${system};
@@ -23,6 +23,7 @@
     in
     {
       nixos = nixos;
+      unstable = nix-unstable;
       packages.${system}.nixvim = nvim;
       nixosModules = {
         general = {
@@ -32,7 +33,12 @@
             { _module.args.packages = { nixvim = nvim; }; }
           ];
         };
-        server = import ./modules/server;
+        server = {
+          imports = [
+            ./packages
+            ./modules/server
+          ];
+        };
       };
     };
 }
