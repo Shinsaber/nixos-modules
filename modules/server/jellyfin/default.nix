@@ -33,7 +33,7 @@ with types;
     (mkIf cfg.transmission.enable {
       services.transmission = { 
         enable        = true; #Enable transmission daemon
-        package       = pkgs.transmission_4;
+        package       = pkgs.transmission_3;
         openRPCPort   = true; #Open firewall for RPC
         openPeerPorts = true; #Open firewall for Peer Ports
         settings      = {     #Override default settings

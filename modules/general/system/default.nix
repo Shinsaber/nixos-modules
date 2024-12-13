@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, nixos, unstable, ... }:
 
 let cfg = config.shincraft.system;
 in
@@ -47,8 +47,9 @@ with types;
       nixpkgs.config.packageOverrides = pkgs: {
         vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
       };
-      hardware.opengl = {
+      hardware.graphics = {
         enable = true;
+        driSupport32Bit = true;
         extraPackages = with pkgs; [
           intel-media-driver
           vaapiIntel
@@ -102,6 +103,34 @@ with types;
         settings = {
           experimental-features = "nix-command flakes";
         };
+        #registry = {
+        #  nixos = {
+        #    flake = nixos;
+        #    from = {
+        #      type = "indirect";
+        #      id = "nixos";
+        #    };
+        #  };
+        #  nixpkgs = {
+        #    flake = nixos;
+        #    from = {
+        #      type = "indirect";
+        #      id = "nixos";
+        #    };
+        #  };
+        #  unstable = {
+        #    flake = unstable;
+        #    from = {
+        #      type = "indirect";
+        #      id = "unstable";
+        #    };
+        #  };
+        #};
+        #nixPath = [
+        #  "nixos=${nixos}"
+        #  "nixpkgs=${nixos}"
+        #  "unstable=${unstable}"
+        #];
     }; })
   ];
 }
