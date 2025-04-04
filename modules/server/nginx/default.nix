@@ -1,5 +1,7 @@
 { config, lib, pkgs, ... }:
 
+
+
 with lib;
 with types;
 let 
@@ -12,17 +14,12 @@ let
         type    = str;
       };
       port = mkOption {
-        default = "80";
+        default = 80;
         type    = ints.u16;
       };
     };
   };
-  domainModule = { name, config, ... }:
-  {
-    options = mkOption {
-      type = attrsOf ( submodule subDomainModule );
-    };
-  };
+
 in
 with lib;
 with types;
@@ -30,14 +27,27 @@ with types;
   options.shincraft.server = {
     nginx =  {
       enable = mkEnableOption "Install nginx in the systeme";
+      mail = mkOption {
+        default = null;
+        type    = str;
+        example = "user@domain.tld";
+      };
       domain = mkOption {
-        type    = attrsOf ( submodule domainModule );
+        type    = attrsOf ( attrsOf ( submodule subDomainModule ) );
       };
     };
   };
 
   config = mkMerge [
     (mkIf cfg.enable {
+      security.acme.acceptTerms = true;
+      security.acme.defaults.email = cfg.mail;
+      networking.firewall = {
+        allowedTCPPorts = [
+          80
+          443
+        ];
+      };
       services.nginx = {
         enable = true;
 
@@ -62,15 +72,15 @@ with types;
         '';
 
         virtualHosts = listToAttrs ( flatten (
-          flip mapAttrsToList cfg.domain ( domain: domainConfig: 
-            flip mapAttrsToList domainConfig.proxy ( subdomain: config: 
+          flip mapAttrsToList cfg.domain ( domain: subDomainConfig: 
+            flip mapAttrsToList subDomainConfig ( subdomain: config: 
               { 
                 name = "${subdomain}.${domain}";
                 value = {
-                  addSSL = true;
                   enableACME = true;
+                  forceSSL = true;
                   locations."/" = {
-                    proxyPass = "http://${config.host}:${config.port}";
+                    proxyPass = "http://${config.host}:${toString config.port}";
                     proxyWebsockets = true; # needed if you need to use WebSocket
                   };
                 };

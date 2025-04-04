@@ -20,10 +20,12 @@ with types;
   config = mkMerge [
     (mkIf cfg.jellyfin {
       shincraft.system.vaapi = mkDefault true;
-      environment.systemPackages = [
-        pkgs.jellyfin
-        pkgs.jellyfin-web
-        pkgs.jellyfin-ffmpeg
+      environment.systemPackages = with pkgs; [
+        jellyfin
+        jellyfin-web
+        jellyfin-ffmpeg
+        mediainfo
+        mkvtoolnix
       ];
       services.jellyfin = {
         enable       = true;
