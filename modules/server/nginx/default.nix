@@ -1,7 +1,4 @@
 { config, lib, pkgs, ... }:
-
-
-
 with lib;
 with types;
 let 
@@ -19,7 +16,6 @@ let
       };
     };
   };
-
 in
 with lib;
 with types;
