@@ -77,6 +77,17 @@ with types;
           };
         };
       };
+      services.keycloak = {
+        enable = true;
+        initialAdminPassword = "MyBigPassword";   # change on first login
+        database.passwordFile = "${pkgs.writeText "dbpass" "10df7295-41db-4717-98f0-e7ff65c0acf9"}";
+        settings = {
+          hostname-backchannel-dynamic = true;
+          hostname = "https://auth.shincraft.fr";
+          http-port = 8080;
+          http-enabled = true;
+        };
+      };
     })
   ];
 }
