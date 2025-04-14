@@ -2,7 +2,7 @@
 with lib;
 with types;
 let 
-  cfg = config.shincraft.server.nginx;
+  cfg = config.shincraft.server;
   subDomainModule = { name, config, ... }:
   {
     options = {
@@ -35,9 +35,9 @@ with types;
   };
 
   config = mkMerge [
-    (mkIf cfg.enable {
+    (mkIf cfg.nginx.enable {
       security.acme.acceptTerms = true;
-      security.acme.defaults.email = cfg.mail;
+      security.acme.defaults.email = cfg.nginx.mail;
       networking.firewall = {
         allowedTCPPorts = [
           80
@@ -61,29 +61,31 @@ with types;
           add_header 'Referrer-Policy' 'origin-when-cross-origin';
 
           # Disable embedding as a frame
-          add_header X-Frame-Options DENY;
+          #add_header X-Frame-Options DENY;
 
           # Prevent injection of code in other mime types (XSS Attacks)
           add_header X-Content-Type-Options nosniff;
         '';
 
-        virtualHosts = listToAttrs ( flatten (
-          flip mapAttrsToList cfg.domain ( domain: subDomainConfig: 
-            flip mapAttrsToList subDomainConfig ( subdomain: config: 
-              { 
-                name = "${subdomain}.${domain}";
-                value = {
-                  enableACME = true;
-                  forceSSL = true;
-                  locations."/" = {
-                    proxyPass = "http://${config.host}:${toString config.port}";
-                    proxyWebsockets = true; # needed if you need to use WebSocket
+        virtualHosts = mkMerge [
+          (listToAttrs ( flatten (
+            flip mapAttrsToList cfg.nginx.domain ( domain: subDomainConfig: 
+              flip mapAttrsToList subDomainConfig ( subdomain: config: 
+                { 
+                  name = "${subdomain}.${domain}";
+                  value = {
+                    enableACME = true;
+                    forceSSL = true;
+                    locations."/" = {
+                      proxyPass = "http://${config.host}:${toString config.port}";
+                      proxyWebsockets = true; # needed if you need to use WebSocket
+                    };
                   };
-                };
-              }
+                }
+              )
             )
-          )
-        ));
+          )))
+        ];
       };
     })
   ];

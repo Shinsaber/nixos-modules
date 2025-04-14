@@ -12,6 +12,11 @@ with types;
       type    = str;
       example = "dc=example,dc=com";
     };
+    name = mkOption {
+      default = "Exemple";
+      type    = str;
+      example = "Exemple";
+    };
     rootCN = mkOption {
       default = "admin";
       type    = str;
@@ -35,7 +40,9 @@ with types;
 
         settings = {
           attrs = {
-            olcLogLevel = "conns config";
+            olcLogLevel                = "conns config";
+            olcPasswordHash            = "{CRYPT}";
+            olcPasswordCryptSaltFormat = "$6$rounds=50000$%.16s";
           };
 
           children = {
@@ -46,6 +53,7 @@ with types;
               "${pkgs.openldap}/etc/schema/nis.ldif"
               "${pkgs.openldap}/etc/schema/openldap.ldif"
               "${pkgs.openldap}/etc/schema/dyngroup.ldif"
+              #"${pkgs.openldap}/etc/schema/samba.ldif"
             ];
 
             "olcDatabase={1}mdb".attrs = {
@@ -75,6 +83,17 @@ with types;
               ];
             };
           };
+        };
+      };
+      services.keycloak = {
+        enable = true;
+        initialAdminPassword = "MyBigPassword";   # change on first login
+        database.passwordFile = "${pkgs.writeText "dbpass" "10df7295-41db-4717-98f0-e7ff65c0acf9"}";
+        settings = {
+          hostname-backchannel-dynamic = true;
+          hostname = "https://auth.shincraft.fr";
+          http-port = 8080;
+          http-enabled = true;
         };
       };
     })
