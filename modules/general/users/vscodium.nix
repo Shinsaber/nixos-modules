@@ -5,14 +5,15 @@
     commandLineArgs = "--ozone-platform=x11";
   });
   mutableExtensionsDir = false;
-  enableUpdateCheck = false;
-  enableExtensionUpdateCheck = false;
-  extensions = with pkgs.vscode-extensions; [
+  profiles.default.enableUpdateCheck = false;
+  profiles.default.enableExtensionUpdateCheck = false;
+  profiles.default.extensions = with pkgs.vscode-extensions; [
     # Nix file code
     bbenoist.nix
     jnoortheen.nix-ide
     # Java
     redhat.java
+    mathiasfrohlich.kotlin
     # The Remote - SSH extension lets you use any remote machine with a SSH server as your development environment. This can greatly simplify development and troubleshooting in a wide variety of situations.
     ms-vscode-remote.remote-ssh
     # It helps you to easily access your projects, no matter where they are located. Don't miss those important projects anymore.
@@ -32,6 +33,11 @@
     # This extension integrates GitLab into Visual Studio Code.
     gitlab.gitlab-workflow
     hediet.vscode-drawio
+    continue.continue
+
+    ms-kubernetes-tools.vscode-kubernetes-tools
+    redhat.vscode-yaml
+    tim-koehler.helm-intellisense
 
     #vscodevim.vim
     redhat.vscode-yaml
@@ -42,8 +48,8 @@
       {
         name = "vscode-pets";
         publisher = "tonybaloney";
-        version = "1.27.0";
-        sha256 = "sha256-ZWJW5Y2jzJlTgnys2GF+5tDBEsn3yZUqlGeYwwBf9zo=";
+        version = "1.31.0";
+        sha256 = "sha256-/7d78wuTqHK9mP/Kj+PUMW/hvoTn4Gm6OOplASBc3jw=";
       }
       # Dendron is an open-source, local-first, markdown-based, note-taking tool.
       {
@@ -52,29 +58,27 @@
         version = "0.124.0";
         sha256 = "sha256-/hxgmmiMUfBtPt5BcuNvtXs3LzDmPwDuUOyDf2udHws=";
       }
-      {
-        name = "dendron-paste-image";
-        publisher = "dendron";
-        version = "1.1.1";
-        sha256 = "sha256-SlW8MEWBgf8cJsdSzeegqPiAlEvlnrxuvrJJdhHwq2E=";
-      }
+      #{
+      #  name = "dendron-paste-image";
+      #  publisher = "dendron";
+      #  version = "1.1.1";
+      #  sha256 = "sha256-SlW8MEWBgf8cJsdSzeegqPiAlEvlnrxuvrJJdhHwq2E=";
+      #}
       #dendron.dendron-markdown-shortcuts
-      # https://marketplace.visualstudio.com/items?itemName=Continue.continue
-      # Open-source autopilot for software development - bring the power of ChatGPT to your IDE
-      {
-        name = "continue";
-        publisher = "Continue";
-        version = "0.9.217";
-        sha256 = "sha256-34yTYm2s8H8BVGMJNIuDxbjRuYrBJZ330LRMWUJqyWg=";
-      }
       {
         name = "kotlin";
         publisher = "fwcd";
         version = "0.2.35";
         sha256 = "sha256-UyiMacHjs8tbziQzrGlP5A+OSNuzIij1yFBTRuM6qmM=";
       }
+      {
+        name = "excalidraw-editor";
+        publisher = "pomdtr";
+        version = "3.5.0";
+        sha256 = "sha256-nGv0mMKxjJLGMAbaT5z5NELuYEWnh+N0CfJoS2IZEms=";
+      }
   ];
-  userSettings = {
+  profiles.default.userSettings = {
     files.autoSave = "off";
     files.exclude = {
       "**/.git"      = true;
@@ -126,7 +130,7 @@
       "editor.defaultFormatter" = "esbenp.prettier-vscode";
     };
   };
-  userTasks = {
+  profiles.default.userTasks = {
     #version = "2.0.0";
     #tasks = [
     #    {

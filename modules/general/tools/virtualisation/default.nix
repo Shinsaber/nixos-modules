@@ -27,13 +27,15 @@ with lib;
       environment.systemPackages = with pkgs; [
         quickemu
         quickgui
-        vagrant
       ];
       programs.virt-manager.enable = true;
     })
 
     (mkIf cfg.virtualbox {
       virtualisation.virtualbox.host.enable = true;
+      environment.systemPackages = with pkgs; [
+        vagrant
+      ];
     })
 
     (mkIf cfg.docker {

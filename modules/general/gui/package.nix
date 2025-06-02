@@ -9,7 +9,6 @@ with types;
     (mkIf cfg.enable
       {
         environment.systemPackages = with pkgs; [
-          filelight
           thunderbird
           onlyoffice-bin
           calibre
@@ -18,7 +17,7 @@ with types;
           pdfsam-basic
           pdfslicer
           keepassxc
-          alacritty
+          #alacritty
 
           clementine
           vlc
@@ -36,7 +35,7 @@ with types;
           #(nextcloud-client.overrideAttrs (oldAttrs: rec {
           #    #buildInputs = [ inotify-tools libcloudproviders libsecret openssl pcre qtbase qtkeychain qttools qtwebengine qtquickcontrols2 qtgraphicaleffects qtwebsockets sqlite kio kcoreaddons ];
           #    nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [extra-cmake-modules];
-          #    buildInputs = oldAttrs.buildInputs ++ [libsForQt5.kio];
+          #    buildInputs = oldAttrs.buildInputs ++ [kdePackages.kio];
           #  }))
         ];
         #networking.firewall = {
@@ -88,7 +87,7 @@ with types;
     (mkIf cfg.pkgs."3d".enable
       {
         environment.systemPackages = with pkgs; [
-          cura
+          #cura
           freecad
         ];
       }

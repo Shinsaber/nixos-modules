@@ -6,6 +6,7 @@ ZLE_RPROMPT_INDENT=0             # Cut Extra space without background on the rig
 
 # Make zsh know about hosts already accessed by SSH
 zstyle -e ':completion:*:(ssh|scp|sftp|rsh|rsync):hosts' hosts 'reply=(${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) /dev/null)"}%%[# ]*}//,/ })'
+compdef kubecolor=kubectl
 
 export EDITOR='vim'
 export CITY='Nanterre'

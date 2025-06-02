@@ -10,7 +10,6 @@
     ncdu
     unzip
     wget
-    vim
     git
     jq
     delta

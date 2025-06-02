@@ -49,7 +49,7 @@ with types;
           languagetool.enable = true;
         };
 
-        environment.systemPackages = with pkgs; with libsForQt5; [
+        environment.systemPackages = with pkgs; with kdePackages; [
           pavucontrol
           easyeffects
           libnotify
@@ -60,8 +60,8 @@ with types;
 
         # Fonts
         fonts = {
-          packages = with pkgs; [ emojione fira-code (nerdfonts.override { fonts = [ "FiraCode" ]; }) ];
-          fontconfig.defaultFonts.monospace = [ "Fira Code" ];
+          packages = with pkgs; [ emojione nerd-fonts.fira-code ];
+          fontconfig.defaultFonts.monospace = [ "FiraCode Nerd Font" ];
           fontconfig.defaultFonts.emoji = [ "EmojiOne Color" ];
         };
       }

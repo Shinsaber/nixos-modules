@@ -61,6 +61,8 @@ with types;
 
               olcDatabase = "{1}mdb";
               olcDbDirectory = "/var/lib/openldap/data";
+              olcPasswordHash            = "{CRYPT}";
+              olcPasswordCryptSaltFormat = "$6$rounds=50000$%.16s";
 
               olcSuffix = cfg.suffix;
 

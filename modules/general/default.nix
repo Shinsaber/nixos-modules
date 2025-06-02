@@ -70,53 +70,69 @@ in
     ./users
   ];
 
-  options.shincraft = {
-    users  = mkOption {
-      type = attrsOf ( submodule userModule );
-    };
-    gui = {
-      enable = mkEnableOption "Enable Plasma gui";
-      audio.pipewire.enable = mkEnableOption "Enable pipewire instead of pulseaudio";
-      plasma = {
-        enable     = mkEnableOption "Enable Plasma wayland gui";
-        kdeconnect = mkEnableOption "Enable KDE connect <3";
+  options = {
+    boot.plymouth = {
+      name = mkOption {
+        default = "NixOS";
+        type    = str;
       };
-      pkgs = {
-        game.enable    = mkEnableOption "Enable gui game package";
-        art.enable     = mkEnableOption "Enable gui art package";
-        "3d".enable    = mkEnableOption "Enable gui 3D package";
-        audio.enable   = mkEnableOption "Enable gui audio package";
-        video.enable   = mkEnableOption "Enable gui vidéo package";
-        android.enable = mkEnableOption "Enable android package";
+      colorNormal = mkOption {
+        default = "Color(0.2400, 0.3500, 0.5900)";
+        type    = str;
+      };
+      colorTinted = mkOption {
+        default = "Color(0.3600, 0.5200, 0.6700)";
+        type    = str;
       };
     };
-    system = {
-      vaapi         = mkEnableOption "Hardware Accelerators";
-      batterysave   = mkEnableOption "Activate systemd disable service on battery";
-      nix = {
-        autoUpgrade = mkEnableOption "Activate nix autoUpgrade at 12h-14h";
-        optiStore   = mkEnableOption "Enable optimisation et garbage collecte";
+    shincraft = {
+      users  = mkOption {
+        type = attrsOf ( submodule userModule );
       };
-    };
-    shell = {
-      vim.enable    = mkEnableOption "Activate Vim advenced config";
-      nixvim.enable = mkEnableOption "Activate NeoVim advenced config";
-      tmux.enable   = mkEnableOption "Activate tmux advenced config";
-      zsh = {
-        enable = mkEnableOption "Activate ZSH as default shell";
-        powerlevel10k = {
-          enable = mkEnableOption "Setup powerlevel10k for ZSH";
-          setupInstantPrompt = mkEnableOption "Setup instant prompt, might crash zsh";
+      gui = {
+        enable = mkEnableOption "Enable Plasma gui";
+        audio.pipewire.enable = mkEnableOption "Enable pipewire instead of pulseaudio";
+        plasma = {
+          enable     = mkEnableOption "Enable Plasma wayland gui";
+          kdeconnect = mkEnableOption "Enable KDE connect <3";
+        };
+        pkgs = {
+          game.enable    = mkEnableOption "Enable gui game package";
+          art.enable     = mkEnableOption "Enable gui art package";
+          "3d".enable    = mkEnableOption "Enable gui 3D package";
+          audio.enable   = mkEnableOption "Enable gui audio package";
+          video.enable   = mkEnableOption "Enable gui vidéo package";
+          android.enable = mkEnableOption "Enable android package";
         };
       };
-    };
-    tools = {
-      hack.enable  = mkEnableOption "Activate hacking tools set";
-      ia.llama     = mkEnableOption "Activate IA llama tools set";
-      virtualisation = {
-        docker     = mkEnableOption "Activate Docker virtualisation";
-        libvirt    = mkEnableOption "Activate Libvirt virtualisation (qemu)";
-        virtualbox = mkEnableOption "Activate VirtualBox virtualisation";
+      system = {
+        vaapi         = mkEnableOption "Hardware Accelerators";
+        batterysave   = mkEnableOption "Activate systemd disable service on battery";
+        nix = {
+          autoUpgrade = mkEnableOption "Activate nix autoUpgrade at 12h-14h";
+          optiStore   = mkEnableOption "Enable optimisation et garbage collecte";
+        };
+      };
+      shell = {
+        vim.enable    = mkEnableOption "Activate Vim advenced config";
+        nixvim.enable = mkEnableOption "Activate NeoVim advenced config";
+        tmux.enable   = mkEnableOption "Activate tmux advenced config";
+        zsh = {
+          enable = mkEnableOption "Activate ZSH as default shell";
+          powerlevel10k = {
+            enable = mkEnableOption "Setup powerlevel10k for ZSH";
+            setupInstantPrompt = mkEnableOption "Setup instant prompt, might crash zsh";
+          };
+        };
+      };
+      tools = {
+        hack.enable  = mkEnableOption "Activate hacking tools set";
+        ia.llama     = mkEnableOption "Activate IA llama tools set";
+        virtualisation = {
+          docker     = mkEnableOption "Activate Docker virtualisation";
+          libvirt    = mkEnableOption "Activate Libvirt virtualisation (qemu)";
+          virtualbox = mkEnableOption "Activate VirtualBox virtualisation";
+        };
       };
     };
   };

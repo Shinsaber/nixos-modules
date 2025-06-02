@@ -63,7 +63,7 @@ in
             }))
         ])
         (mkIf ( cfg.home-config.kube.enable && config.shincraft.gui.enable ) [
-          openlens
+          #openlens
         ])
         (mkIf ( cfg.home-config.database.enable && config.shincraft.gui.enable ) [
           dbeaver-bin

@@ -6,8 +6,9 @@ with lib;
 {
   config = mkMerge [
     (mkIf cfg.llama {
-      #services.ollama.enable  = true;
+      services.ollama.enable  = true;
       #services.ollama.package = pkgs.llama-cpp;
+      services.nextjs-ollama-llm-ui.enable = true;
     })
   ];
 }
