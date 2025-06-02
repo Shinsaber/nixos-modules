@@ -3,6 +3,8 @@
     """""""""""""""""""""""""""""""""""""""""""""""""""
     " => Général
     """""""""""""""""""""""""""""""""""""""""""""""""""
+    set mouse-=a
+
     " Enable filetype plugin
     filetype plugin on
     filetype plugin indent on

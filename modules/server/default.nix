@@ -4,5 +4,6 @@
   [
     ./jellyfin
     ./nginx
+    ./auth
   ];
 }

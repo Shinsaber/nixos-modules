@@ -20,10 +20,12 @@ with types;
   config = mkMerge [
     (mkIf cfg.jellyfin {
       shincraft.system.vaapi = mkDefault true;
-      environment.systemPackages = [
-        pkgs.jellyfin
-        pkgs.jellyfin-web
-        pkgs.jellyfin-ffmpeg
+      environment.systemPackages = with pkgs; [
+        jellyfin
+        jellyfin-web
+        jellyfin-ffmpeg
+        mediainfo
+        mkvtoolnix
       ];
       services.jellyfin = {
         enable       = true;
@@ -33,7 +35,7 @@ with types;
     (mkIf cfg.transmission.enable {
       services.transmission = { 
         enable        = true; #Enable transmission daemon
-        package       = pkgs.transmission_4;
+        package       = pkgs.transmission_3;
         openRPCPort   = true; #Open firewall for RPC
         openPeerPorts = true; #Open firewall for Peer Ports
         settings      = {     #Override default settings
