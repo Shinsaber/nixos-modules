@@ -12,7 +12,7 @@ with types;
           zsh-forgit              = super.callPackage ./plugin/zsh-forgit.nix { };
           zsh-autopair            = super.callPackage ./plugin/zsh-autopair.nix { };
           zsh-auto-notify         = super.callPackage ./plugin/zsh-auto-notify.nix { };
-          zsh-fzf-history-search  = super.callPackage ./plugin/zsh-fzf-history-search.nix { };
+          #zsh-fzf-history-search  = super.callPackage ./plugin/zsh-fzf-history-search.nix { };
         })
       ];
 
@@ -55,6 +55,7 @@ with types;
         ohMyZsh = {
           enable = true;
           plugins = [
+            "git"
             "helm"
             "sudo"
             "forgit"

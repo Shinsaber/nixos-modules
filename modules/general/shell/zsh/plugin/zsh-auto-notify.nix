@@ -2,13 +2,13 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "zsh-auto-notify";
-  version = "0.8.1";
+  version = "0.11.1";
 
   src = fetchFromGitHub {
     owner = "MichaelAquilina";
     repo = "zsh-auto-notify";
     rev = "${version}";
-    sha256 = "sha256-4PH7g7OY5hASgq4xdswYaCDnys4pz/wyIVkGgaPcgBI=";
+    sha256 = "sha256-1+HD4rerEu0uu4hWtMORBeAJJgIgXv65McnqOpaSIV8=";
   };
 
   dontConfigure = true;

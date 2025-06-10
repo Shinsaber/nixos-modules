@@ -98,7 +98,6 @@ with types;
         environment.systemPackages = with pkgs; [
           audacity
           picard
-          helm
         ];
       }
     )
