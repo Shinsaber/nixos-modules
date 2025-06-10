@@ -9,7 +9,6 @@
       };
       media-files = {
         enable = true;
-        dependencies.chafa.enable = true;
       };
       ui-select.enable = true;
       undo.enable = true;

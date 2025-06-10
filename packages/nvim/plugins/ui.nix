@@ -24,8 +24,8 @@
 
     cursorline = {
       enable = true;
-      cursorline.enable = true;
-      cursorword.enable = false;
+      settings.cursorline.enable = true;
+      settings.cursorword.enable = false;
     };
 
     noice = {

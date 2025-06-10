@@ -19,6 +19,7 @@ with types;
 
         environment.systemPackages = with pkgs; with kdePackages; [
           sddm-kcm
+          qtwebengine
           kcoreaddons
           #libsForQt5
           kio

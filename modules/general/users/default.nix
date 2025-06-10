@@ -64,6 +64,7 @@ in
         ])
         (mkIf ( cfg.home-config.kube.enable && config.shincraft.gui.enable ) [
           #openlens
+          jet-pilot
         ])
         (mkIf ( cfg.home-config.database.enable && config.shincraft.gui.enable ) [
           dbeaver-bin

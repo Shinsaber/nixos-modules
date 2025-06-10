@@ -64,6 +64,11 @@ with lib;
         indent-o-matic.enable = true;
         nvim-autopairs.enable = true;
       };
+
+      dependencies = {
+        chafa.enable = true;
+        fzf.enable = true;
+      };
     }
   ];
 }

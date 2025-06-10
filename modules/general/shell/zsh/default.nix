@@ -19,6 +19,7 @@ with types;
       programs.command-not-found.enable = true;
       environment.systemPackages = with pkgs; [
         bat
+        fd
         ripgrep
         fzf
         libnotify
@@ -46,9 +47,6 @@ with types;
           grep = "grep --color=auto";
           cat  = "bat";
 
-          fd = "find . -type d -name";
-          ff = "find . -type f -name";
-
           kctx    = "kubectx";
           kns     = "kubens";
           kubectl = "kubecolor";
@@ -57,7 +55,7 @@ with types;
         ohMyZsh = {
           enable = true;
           plugins = [
-            "git"
+            "helm"
             "sudo"
             "forgit"
             "docker"
@@ -66,22 +64,25 @@ with types;
             "autopair"
             "colorize"
             "auto-notify"
+            "you-should-use"
             "colored-man-pages"
             "command-not-found"
             "zsh-interactive-cd"
-            "zsh-fzf-history-search"
+            #"zsh-fzf-history-search"
             "history-substring-search"
           ];
           customPkgs = with pkgs; [
             zsh-forgit
-            zsh-fzf-history-search
+            #zsh-fzf-history-search
             zsh-autopair
             zsh-auto-notify
+            zsh-you-should-use
           ];
         };
       };
       environment.etc.zshrc.text = ''
         source ${./zshrc.sh}
+        source ${./fzf.sh}
       '';
 
       # Set as user shell.

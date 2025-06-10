@@ -27,14 +27,14 @@ for ft in $_editor_fts; do alias -s $ft=$EDITOR; done
 _media_fts=(ape avi flv m4a mkv mp4 mov mp3 mpeg mpg ogg ogm rm wav webm)
 for ft in $_media_fts; do alias -s $ft=mpv; done
 
-# Add docker to list of ignored commands
+export AUTO_NOTIFY_ENABLE_SSH=1
 AUTO_NOTIFY_IGNORE+=(
   "docker"
   "ga"
+  "glo"
+  "k"
+  "kubectl"
 )
 
-#auto_notify_ignore+=(
-#  'ga'
-#  'glo'
-#  'cat'
-#)
+export FZF_TMUX=1
+export FZF_COMPLETION_TRIGGER=""

@@ -103,7 +103,7 @@ with types;
         settings = {
           experimental-features = "nix-command flakes";
         };
-        #registry = {
+        registry = {
         #  nixos = {
         #    flake = nixos;
         #    from = {
@@ -118,14 +118,19 @@ with types;
         #      id = "nixos";
         #    };
         #  };
-        #  unstable = {
-        #    flake = unstable;
-        #    from = {
-        #      type = "indirect";
-        #      id = "unstable";
-        #    };
-        #  };
-        #};
+          unstable = {
+            from = {
+              id = "unstable";
+              type = "indirect";
+            };
+            to = {
+              type  = "github";
+              owner = "NixOS";
+              ref   = "nixpkgs-unstable";
+              repo  = "nixpkgs";
+            };
+          };
+        };
         #nixPath = [
         #  "nixos=${nixos}"
         #  "nixpkgs=${nixos}"
