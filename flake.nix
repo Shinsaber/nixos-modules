@@ -28,6 +28,7 @@
       nixosModules = {
         general = {
           imports = [
+            ./packages
             ./modules/general
             home-manager.nixosModules.home-manager
             { _module.args.packages = { nixvim = nvim; }; }

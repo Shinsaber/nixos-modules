@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+# Script d'aide pour basculer vers Java 7 + Maven 3.8.4
+# Utilisation: source java7-maven-env.sh
+
+# Sauvegarde les variables Java et Maven actuelles
+if [ ! -z "${JAVA_HOME:-}" ]; then
+    export JAVA_HOME_BACKUP="$JAVA_HOME"
+fi
+if [ ! -z "${JDK_HOME:-}" ]; then
+    export JDK_HOME_BACKUP="$JDK_HOME"
+fi
+if [ ! -z "${M2_HOME:-}" ]; then
+    export M2_HOME_BACKUP="$M2_HOME"
+fi
+if [ ! -z "${MAVEN_HOME:-}" ]; then
+    export MAVEN_HOME_BACKUP="$MAVEN_HOME"
+fi
+
+# Configure Java 7
+export JAVA_HOME="@openjdk7@"
+export JDK_HOME="@openjdk7@"
+
+# Configure Maven 3.8.4
+export M2_HOME="@maven384@"
+export MAVEN_HOME="@maven384@"
+
+# Met à jour le PATH
+export PATH="@openjdk7@/bin:@maven384@/bin:$PATH"
+
+echo "🔄 Environnement Java 7 + Maven 3.8.4 configuré"
+echo "📍 JAVA_HOME: $JAVA_HOME"
+echo "📍 M2_HOME: $M2_HOME"
+echo "⚠️  ATTENTION: Java 7 et Maven 3.8.4 sont obsolètes et contiennent des vulnérabilités"
+echo ""
+echo "📝 Version Java:"
+java -version 2>&1 | head -n3
+echo ""
+echo "📝 Version Maven:"
+mvn -version | head -n1
+
+# Fonction pour restaurer l'environnement précédent
+restore_java_maven() {
+    if [ ! -z "${JAVA_HOME_BACKUP:-}" ]; then
+        export JAVA_HOME="$JAVA_HOME_BACKUP"
+        unset JAVA_HOME_BACKUP
+    else
+        unset JAVA_HOME
+    fi
+    
+    if [ ! -z "${JDK_HOME_BACKUP:-}" ]; then
+        export JDK_HOME="$JDK_HOME_BACKUP"
+        unset JDK_HOME_BACKUP
+    else
+        unset JDK_HOME
+    fi
+    
+    if [ ! -z "${M2_HOME_BACKUP:-}" ]; then
+        export M2_HOME="$M2_HOME_BACKUP"
+        unset M2_HOME_BACKUP
+    else
+        unset M2_HOME
+    fi
+    
+    if [ ! -z "${MAVEN_HOME_BACKUP:-}" ]; then
+        export MAVEN_HOME="$MAVEN_HOME_BACKUP"
+        unset MAVEN_HOME_BACKUP
+    else
+        unset MAVEN_HOME
+    fi
+    
+    # Nettoie le PATH (approximatif)
+    export PATH=$(echo "$PATH" | sed "s|@openjdk7@/bin:||g" | sed "s|@maven384@/bin:||g")
+    
+    echo "♻️  Environnement Java/Maven restauré"
+}
+
+echo ""
+echo "💡 Commandes disponibles:"
+echo "   - java7, javac7  : Versions explicites de Java 7"
+echo "   - mvn            : Maven 3.8.4 avec Java 7"
+echo "   - restore_java_maven : Restaure l'environnement précédent"

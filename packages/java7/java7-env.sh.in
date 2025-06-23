@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+# Script d'aide pour basculer vers Java 7
+# Utilisation: source java7-env.sh
+
+# Sauvegarde les variables Java actuelles
+if [ ! -z "${JAVA_HOME:-}" ]; then
+    export JAVA_HOME_BACKUP="$JAVA_HOME"
+fi
+if [ ! -z "${JDK_HOME:-}" ]; then
+    export JDK_HOME_BACKUP="$JDK_HOME"
+fi
+
+# Configure Java 7
+export JAVA_HOME="@openjdk7@"
+export JDK_HOME="@openjdk7@"
+export PATH="@openjdk7@/bin:$PATH"
+
+echo "🔄 Environnement Java 7 configuré"
+echo "📍 JAVA_HOME: $JAVA_HOME"
+echo "⚠️  ATTENTION: Java 7 est obsolète et contient des vulnérabilités"
+echo "📝 Version Java:"
+java -version
+
+# Fonction pour restaurer l'environnement Java précédent
+restore_java() {
+    if [ ! -z "${JAVA_HOME_BACKUP:-}" ]; then
+        export JAVA_HOME="$JAVA_HOME_BACKUP"
+        unset JAVA_HOME_BACKUP
+    else
+        unset JAVA_HOME
+    fi
+    
+    if [ ! -z "${JDK_HOME_BACKUP:-}" ]; then
+        export JDK_HOME="$JDK_HOME_BACKUP"
+        unset JDK_HOME_BACKUP
+    else
+        unset JDK_HOME
+    fi
+    
+    # Nettoie le PATH (approximatif)
+    export PATH=$(echo "$PATH" | sed "s|@openjdk7@/bin:||g")
+    
+    echo "♻️  Environnement Java restauré"
+}
+
+echo "💡 Utilisez 'restore_java' pour revenir à la configuration Java précédente"

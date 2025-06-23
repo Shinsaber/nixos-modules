@@ -128,6 +128,17 @@ in
       tools = {
         hack.enable  = mkEnableOption "Activate hacking tools set";
         ia.llama     = mkEnableOption "Activate IA llama tools set";
+        java7 = {
+          enable = mkEnableOption "Enable OpenJDK 7 for legacy applications";
+          setAsDefault = mkOption {
+            type = types.bool;
+            default = false;
+            description = ''
+              Si activé, définit Java 7 comme la version par défaut du système.
+              ATTENTION: Cela peut casser d'autres applications qui nécessitent des versions plus récentes.
+            '';
+          };
+        };
         virtualisation = {
           docker     = mkEnableOption "Activate Docker virtualisation";
           libvirt    = mkEnableOption "Activate Libvirt virtualisation (qemu)";

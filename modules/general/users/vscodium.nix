@@ -33,8 +33,11 @@
     # This extension integrates GitLab into Visual Studio Code.
     gitlab.gitlab-workflow
     hediet.vscode-drawio
-    continue.continue
+    #continue.continue
 
+    github.copilot
+    github.copilot-chat
+    
     ms-kubernetes-tools.vscode-kubernetes-tools
     redhat.vscode-yaml
     tim-koehler.helm-intellisense
