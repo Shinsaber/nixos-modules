@@ -18,6 +18,7 @@
     nil
     nixpkgs-fmt
     restic
+    glow
     daemontools
   ];
 }

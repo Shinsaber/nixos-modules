@@ -8,10 +8,12 @@ ZLE_RPROMPT_INDENT=0             # Cut Extra space without background on the rig
 zstyle -e ':completion:*:(ssh|scp|sftp|rsh|rsync):hosts' hosts 'reply=(${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) /dev/null)"}%%[# ]*}//,/ })'
 compdef kubecolor=kubectl
 
-export EDITOR='vim'
+export EDITOR='nvim'
 export CITY='Nanterre'
 
-mkcd () { mkdir -p "$1" && cd "$1" }
+mkcd () { 
+  mkdir -p "$1" && cd "$1" || return 2
+}
 color () { for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$'\n'}; done }
 
 alias -g G="| grep"
@@ -39,3 +41,8 @@ AUTO_NOTIFY_IGNORE+=(
 export FZF_TMUX=1
 export FZF_COMPLETION_TRIGGER="**"
 export YSU_MESSAGE_POSITION="after"
+
+# Démarrer tmux automatiquement si non déjà dans une session tmux
+if command -v tmux >/dev/null 2>&1; then
+  [ -z "$TMUX" ] && [ -n "$PS1" ] && exec tmux
+fi

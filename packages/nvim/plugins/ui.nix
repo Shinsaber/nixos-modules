@@ -148,7 +148,7 @@
       };
     }
     {
-      key = "<C-s>";
+      key = "<C-A-s>";
       action = "<C-w>s";
       options = {
         silent = true;
@@ -156,7 +156,7 @@
       };
     }
     {
-      key = "<C-v>";
+      key = "<C-A-v>";
       action = "<C-w>v";
       options = {
         silent = true;
@@ -164,7 +164,7 @@
       };
     }
     {
-      key = "<C-Left>";
+      key = "<C-t>";
       action = "<cmd>TmuxNavigateLeft<cr>";
       options = {
         silent = true;
@@ -172,7 +172,7 @@
       };
     }
     {
-      key = "<C-Down>";
+      key = "<C-s>";
       action = "<cmd>TmuxNavigateDown<cr>";
       options = {
         silent = true;
@@ -180,7 +180,7 @@
       };
     }
     {
-      key = "<C-Up>";
+      key = "<C-r>";
       action = "<cmd>TmuxNavigateUp<cr>";
       options = {
         silent = true;
@@ -188,7 +188,7 @@
       };
     }
     {
-      key = "<C-Right>";
+      key = "<C-n>";
       action = "<cmd>TmuxNavigateRight<cr>";
       options = {
         silent = true;

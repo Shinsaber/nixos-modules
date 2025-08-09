@@ -1,6 +1,6 @@
 # Fichier de configuration NixOS
 
-Ressortir ma configuration pour mes poste et serveurs dans des modules standardisés. Avec des options pour les utilisés.
+Ressortir ma configuration pour mes postes et serveurs dans des modules standardisés. Avec des options pour les utilisés.
 
 ## Les options de config
 
@@ -195,7 +195,7 @@ Ce flake inclut également des packages personnalisés :
 - **autopair** : Auto-fermeture des guillemets/parenthèses
 - **you-should-use** : Suggestions d'alias
 
-### Vim/NeoVim
+### NeoVim
 
 - **LSP** : Support pour Nix, YAML, JSON, Bash, Terraform, Docker, etc.
 - **Telescope** : Recherche fuzzy de fichiers

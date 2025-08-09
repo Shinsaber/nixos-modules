@@ -20,6 +20,7 @@
         module = import ./packages/nvim;
       };
       nvim = nixvim'.makeNixvimWithModule nixvimModule;
+      pkgsUnstable = import nix-unstable { inherit system; config.allowUnfree = true; };
     in
     {
       nixos = nixos;
@@ -32,6 +33,7 @@
             ./modules/general
             home-manager.nixosModules.home-manager
             { _module.args.packages = { nixvim = nvim; }; }
+            { _module.args.unstable = pkgsUnstable; }
           ];
         };
         server = {

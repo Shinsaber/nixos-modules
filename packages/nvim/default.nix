@@ -7,6 +7,7 @@ with lib;
     ./plugins/cmp.nix
     ./plugins/telescope.nix
     ./plugins/treesitter.nix
+    ./plugins/copilot.nix
   ];
 
   config = mkMerge [
@@ -34,29 +35,32 @@ with lib;
         set smarttab
       '';
 
+      clipboard.providers.wl-copy.enable = true;
+      clipboard.providers.xclip.enable = true;
+
       colorschemes.onedark = {
-        enable = true;
+        enable   = true;
         settings = {
-          style = "warmer";
+          style       = "warmer";
           transparent = true;
         };
       };
 
       highlight = {
-        RainbowRedD = { fg = "#8c444a"; bold = true; };
+        RainbowRedD    = { fg = "#8c444a"; bold = true; };
         RainbowYellowD = { fg = "#8c754b"; bold = true; };
-        RainbowBlueD = { fg = "#39668c"; bold = true; };
+        RainbowBlueD   = { fg = "#39668c"; bold = true; };
         RainbowOrangeD = { fg = "#8c6744"; bold = true; };
-        RainbowGreenD = { fg = "#6e8c57"; bold = true; };
+        RainbowGreenD  = { fg = "#6e8c57"; bold = true; };
         RainbowVioletD = { fg = "#7d4c8c"; bold = true; };
-        RainbowCyanD = { fg = "#3e848c"; bold = true; };
-        RainbowRed = { fg = "#E06C75"; bold = true; };
-        RainbowYellow = { fg = "#E5C07B"; bold = true; };
-        RainbowBlue = { fg = "#61AFEF"; bold = true; };
-        RainbowOrange = { fg = "#D19A66"; bold = true; };
-        RainbowGreen = { fg = "#98C379"; bold = true; };
-        RainbowViolet = { fg = "#C678DD"; bold = true; };
-        RainbowCyan = { fg = "#56B6C2"; bold = true; };
+        RainbowCyanD   = { fg = "#3e848c"; bold = true; };
+        RainbowRed     = { fg = "#E06C75"; bold = true; };
+        RainbowYellow  = { fg = "#E5C07B"; bold = true; };
+        RainbowBlue    = { fg = "#61AFEF"; bold = true; };
+        RainbowOrange  = { fg = "#D19A66"; bold = true; };
+        RainbowGreen   = { fg = "#98C379"; bold = true; };
+        RainbowViolet  = { fg = "#C678DD"; bold = true; };
+        RainbowCyan    = { fg = "#56B6C2"; bold = true; };
       };
 
       plugins = {
@@ -67,7 +71,7 @@ with lib;
 
       dependencies = {
         chafa.enable = true;
-        fzf.enable = true;
+        fzf.enable   = true;
       };
     }
   ];

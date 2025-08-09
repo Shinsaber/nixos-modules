@@ -1,8 +1,8 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, unstable, ... }:
 with lib;
 with types;  
 let
-  vscodeConfig = (import ./vscodium.nix){inherit pkgs;};
+  vscodeConfig = (import ./vscodium.nix){pkgs = unstable;};
 in
 {
   config =
@@ -76,6 +76,9 @@ in
         ])
         (mkIf config.shincraft.tools.virtualisation.docker [ 
           dive
+        ])
+        (mkIf cfg.home-config.java.enable [ 
+          sbt
         ])
         [
         ]

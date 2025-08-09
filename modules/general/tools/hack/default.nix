@@ -11,6 +11,9 @@ with lib;
         glances
         nmap
         dig
+        sslscan
+        testssl
+        #nikto
       ];
     })
   ];

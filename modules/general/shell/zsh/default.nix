@@ -46,6 +46,9 @@ with types;
           ls   ="ls --color=tty";
           grep = "grep --color=auto";
           cat  = "bat";
+          vim  = "nvim";
+          vi   = "nvim";
+          v    = "nvim";
 
           kctx    = "kubectx";
           kns     = "kubens";
