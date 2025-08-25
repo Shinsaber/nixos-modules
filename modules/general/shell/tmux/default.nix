@@ -3,12 +3,14 @@ let
   cfg = config.shincraft.shell;
   tmux_conf       = builtins.readFile ./tmux.conf;
   catppuccin_conf = builtins.readFile ./catppuccin.conf;
+  tmux-menu       = ./plugin/menu-plugin.tmux;
   tmux-kubectx    = pkgs.callPackage ./plugin/tmux-kubectx.nix { };
 in
 with lib;
 {
   config = mkMerge [
     (mkIf cfg.tmux.enable {
+      services.playerctld.enable = true;
       programs.tmux = {
         enable = true;
         clock24 = true;
@@ -27,6 +29,7 @@ with lib;
             run-shell ${tmuxPlugins.battery}/share/tmux-plugins/battery/battery.tmux
             run-shell ${tmuxPlugins.weather}/share/tmux-plugins/weather/tmux-weather.tmux
             run-shell ${tmux-kubectx}/share/tmux-plugins/tmux-kubectx/kubectx.tmux
+            tmux_menu="${tmux-menu}"
           ''
           tmux_conf
         ];

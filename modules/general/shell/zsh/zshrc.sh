@@ -1,7 +1,12 @@
+export HISTSIZE=5000000
+
 #setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
+setopt EXTENDED_HISTORY          # Write the history file in the ':start:elapsed;command' format.
 setopt HIST_IGNORE_DUPS          # Don't record an entry that was just recorded again.
-setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate.
+#setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate.
+setopt HIST_IGNORE_SPACE         # Do not record an event starting with a space.
 setopt HIST_BEEP                 # Beep when accessing nonexistent history.
+setopt SHARE_HISTORY             # Share history between all sessions.
 ZLE_RPROMPT_INDENT=0             # Cut Extra space without background on the right side of right prompt
 
 # Make zsh know about hosts already accessed by SSH
@@ -36,6 +41,7 @@ AUTO_NOTIFY_IGNORE+=(
   "glo"
   "k"
   "kubectl"
+  "tmux"
 )
 
 export FZF_TMUX=1

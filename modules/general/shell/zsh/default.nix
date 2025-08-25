@@ -35,6 +35,7 @@ with types;
         '';
 
         shellAliases = {
+          history = "history -t '%d/%m/%Y-%H:%M'";
           l   ="ls -Ah";
           la  ="ls -ah";
           ll  ="ls -lh";
