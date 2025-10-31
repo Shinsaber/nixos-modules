@@ -106,6 +106,7 @@ in
         };
       };
       system = {
+        kanata        = mkEnableOption "Enable kanata service";
         vaapi         = mkEnableOption "Hardware Accelerators";
         batterysave   = mkEnableOption "Activate systemd disable service on battery";
         nix = {

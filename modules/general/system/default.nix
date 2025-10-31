@@ -11,6 +11,41 @@ with types;
   ];
 
   config = mkMerge [
+    (mkIf cfg.kanata {
+      services.kanata = {
+        enable = true;
+        keyboards = {
+          internalKeyboard = {
+            devices = [
+              # Replace the paths below with the appropriate device paths for your setup.
+              # Use `ls /dev/input/by-path/` to find your keyboard devices.
+              "/dev/input/by-path/platform-i8042-serio-0-event-kbd"
+              "/dev/input/by-path/pci-0000:00:14.0-usb-0:3:1.0-event-kbd"
+            ];
+            extraDefCfg = "process-unmapped-keys yes";
+            config = ''
+              (defsrc
+                spc j k l ;
+              )
+              (defvar
+                tap-time 200
+                hold-time 500
+              )
+              (defalias
+                spc (tap-hold $tap-time $hold-time spc (layer-toggle arrow))
+              )
+              (deflayer base
+                @spc j k l ;
+              )
+              (deflayer arrow
+                _ left down up right
+              )
+            '';
+          };
+        };
+      };
+    })
+
     (mkIf cfg.nix.autoUpgrade {
       system = {
         # Periodically automatically run `nixos-rebuild switch`.

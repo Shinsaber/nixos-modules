@@ -7,6 +7,7 @@ with types;
 {
   options.shincraft.server = {
     jellyfin = mkEnableOption "Install jellyfin in the systeme";
+    jellyseerr = mkEnableOption "Install jellyseerr in the systeme";
     transmission = {
       enable = mkEnableOption "Install transmission torrent client";
       whitelist = mkOption {
@@ -21,14 +22,15 @@ with types;
     (mkIf cfg.jellyfin {
       shincraft.system.vaapi = mkDefault true;
       environment.systemPackages = with pkgs; [
-        jellyfin
-        jellyfin-web
-        jellyfin-ffmpeg
         mediainfo
         mkvtoolnix
       ];
       services.jellyfin = {
         enable       = true;
+        openFirewall = true;
+      };
+      services.jellyseerr = {
+        enable = true;
         openFirewall = true;
       };
     })
