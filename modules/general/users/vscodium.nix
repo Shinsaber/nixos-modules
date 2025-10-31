@@ -1,9 +1,7 @@
 {pkgs, ... }:
 {
   enable = true;
-  package = (pkgs.vscodium.override {
-    commandLineArgs = "--ozone-platform=x11";
-  });
+  package = pkgs.vscodium;
   mutableExtensionsDir = false;
   profiles.default.enableUpdateCheck = false;
   profiles.default.enableExtensionUpdateCheck = false;
@@ -35,8 +33,8 @@
     hediet.vscode-drawio
     #continue.continue
 
-    github.copilot
-    github.copilot-chat
+    #github.copilot
+    #github.copilot-chat
     
     ms-kubernetes-tools.vscode-kubernetes-tools
     redhat.vscode-yaml
@@ -46,6 +44,18 @@
     redhat.vscode-yaml
 
   ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+      {
+        name = "copilot";
+        publisher = "GitHub";
+        version = "1.373.1788";
+        sha256 = "sha256-l12UNAF5Nk8hyzLw/AL08I6mAF/fJDHa0mvvD99StbE=";
+      }
+      {
+        name = "copilot-chat";
+        publisher = "GitHub";
+        version = "0.31.2";
+        sha256 = "sha256-7X/FwyDHHCPZu0kSLMjSFqGC3N7Ay+1x3f9gms0nnfs=";
+      }
       # Puts a small, bored cat, an enthusiastic dog, a feisty snake, a rubber duck, or Clippy 📎 in your code editor.
       #tonybaloney.vscode-pets
       {
@@ -82,6 +92,7 @@
       }
   ];
   profiles.default.userSettings = {
+    terminal.integrated.defaultProfile.linux = "bash";
     files.autoSave = "off";
     files.exclude = {
       "**/.git"      = true;

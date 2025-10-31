@@ -12,7 +12,7 @@
         yamlls.enable = true;
         jsonls.enable = true;
         bashls.enable = true;
-        ansiblels.enable = true;
+        ansiblels.enable = false;
         terraformls.enable = true;
         dockerls.enable = true;
         docker_compose_language_service.enable = true;
@@ -22,7 +22,6 @@
         java_language_server.enable = true;
         kotlin_language_server.enable = true;
         eslint.enable = true;
-        vuels.enable = false;
         elmls.enable = true;
         ts_ls.enable = true;
         rust_analyzer = {

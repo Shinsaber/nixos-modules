@@ -45,7 +45,7 @@
 
     rainbow-delimiters = {
       enable = true;
-      highlight = [
+      settings.highlight = [
         "RainbowRed"
         "RainbowYellow"
         "RainbowBlue"
