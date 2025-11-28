@@ -47,9 +47,8 @@ with types;
           ls   ="ls --color=tty";
           grep = "grep --color=auto";
           cat  = "bat";
-          vim  = "nvim";
-          vi   = "nvim";
-          v    = "nvim";
+          vi   = "vim";
+          v    = "vim";
 
           kctx    = "kubectx";
           kns     = "kubens";
@@ -73,12 +72,10 @@ with types;
             "colored-man-pages"
             "command-not-found"
             "zsh-interactive-cd"
-            #"zsh-fzf-history-search"
             "history-substring-search"
           ];
           customPkgs = with pkgs; [
             zsh-forgit
-            #zsh-fzf-history-search
             zsh-autopair
             zsh-auto-notify
             zsh-you-should-use
@@ -93,7 +90,6 @@ with types;
       # Set as user shell.
       users = {
         defaultUserShell = pkgs.zsh;
-        #users.root.shell = pkgs.zsh;
       };
     })
 
@@ -101,6 +97,12 @@ with types;
       programs.zsh.promptInit = ''
         source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
         source ${./p10k.zsh}
+      '';
+    })
+
+    (mkIf config.shincraft.shell.tmux.enable {
+      programs.zsh.promptInit = ''
+        source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
       '';
     })
 

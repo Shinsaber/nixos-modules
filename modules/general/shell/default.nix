@@ -14,5 +14,8 @@ with lib;
 
   config = (mkIf cfg.nixvim.enable {
     environment.systemPackages = [packages.nixvim];
+    programs.zsh.shellAliases = {
+      vim = "nvim";
+    };
   });
 }

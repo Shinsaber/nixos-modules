@@ -60,9 +60,9 @@ with types;
 
         # Fonts
         fonts = {
-          packages = with pkgs; [ emojione nerd-fonts.fira-code ];
+          packages = with pkgs; [ openmoji-color nerd-fonts.fira-code ];
           fontconfig.defaultFonts.monospace = [ "FiraCode Nerd Font" ];
-          fontconfig.defaultFonts.emoji = [ "EmojiOne Color" ];
+          fontconfig.defaultFonts.emoji = [ "OpenMoji Color" ];
         };
       }
     )

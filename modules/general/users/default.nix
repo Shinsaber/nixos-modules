@@ -63,7 +63,7 @@ in
             }))
         ])
         (mkIf ( cfg.home-config.kube.enable && config.shincraft.gui.enable ) [
-          #openlens
+          freelens
           jet-pilot
         ])
         (mkIf ( cfg.home-config.database.enable && config.shincraft.gui.enable ) [
@@ -94,12 +94,13 @@ in
             theme_background = false;
           };
         };
-        vscode = (mkIf cfg.home-config.vscode.enable vscodeConfig);
-        git = (mkIf cfg.home-config.git.enable {
-          # package = pkgs.gitAndTools.gitFull;
-          enable = cfg.home-config.git.enable;
-          delta.enable = false;
-          delta.options = {
+        difftastic = {
+          enable = true;
+          git.enable = true;
+        };
+        delta = {
+          enable = false;
+          options = {
             decorations = {
               commit-decoration-style = "bold yellow box ul";
               file-decoration-style = "none";
@@ -118,35 +119,48 @@ in
             features = "decorations line-number";
             whitespace-error-style = "22 reverse";
           };
-          difftastic.enable = true;
-          userName = cfg.home-config.git.userName;
-          userEmail = cfg.home-config.git.userEmail;
-          aliases = {
-            co = "checkout";
-            c = "commit";
-            ca = "commit --amend";
-            s = "status";
-            st = "status";
-            b = "branch";
-            p = "pull --rebase";
-            pu = "push";
-          };
-          ignores = [ "*~" "*.swp" ];
-          extraConfig = {
-            init.defaultBranch = "master";
+        };
+        vscode = (mkIf cfg.home-config.vscode.enable vscodeConfig);
+        git = (mkIf cfg.home-config.git.enable {
+          # package = pkgs.gitAndTools.gitFull;
+          enable = cfg.home-config.git.enable;
+          settings = {
+            user = {
+              name  = cfg.home-config.git.user.name;
+              email = cfg.home-config.git.user.email;
+            };
+            alias = {
+              co = "checkout";
+              c  = "commit";
+              ca = "commit --amend";
+              s  = "status";
+              st = "status";
+              b  = "branch";
+              p  = "pull --rebase";
+              pu = "push";
+            };
+            init.defaultBranch = "main";
             core.editor = "vim";
+            core.pager = "bat --paging=always";
             #protocol.keybase.allow = "always";
             #credential.helper = "store --file ~/.git-credentials";
             pull.rebase = "false";
           };
+          ignores = [ "*~" "*.swp" ];
         });
         ssh = (mkIf cfg.home-config.ssh.enable {
           enable = true;
-          compression = true;
-          controlMaster = "auto";
-          controlPersist = "10m";
+          matchBlocks = mkMerge [
+            {
+              "*" = {
+                controlMaster  = "auto";
+                controlPersist = "10m";
+                compression = true;
+              };
+            }
+            cfg.home-config.ssh.listAlias
+          ];
           #hashKnownHost = false;
-          matchBlocks = cfg.home-config.ssh.listAlias;
         });
         chromium = (mkIf cfg.home-config.chromium.enable {
           enable = true;

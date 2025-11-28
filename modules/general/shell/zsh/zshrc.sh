@@ -13,7 +13,7 @@ ZLE_RPROMPT_INDENT=0             # Cut Extra space without background on the rig
 zstyle -e ':completion:*:(ssh|scp|sftp|rsh|rsync):hosts' hosts 'reply=(${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) /dev/null)"}%%[# ]*}//,/ })'
 compdef kubecolor=kubectl
 
-export EDITOR='nvim'
+export EDITOR='vim'
 export CITY='Nanterre'
 
 mkcd () { 
@@ -34,7 +34,7 @@ for ft in $_editor_fts; do alias -s $ft=$EDITOR; done
 _media_fts=(ape avi flv m4a mkv mp4 mov mp3 mpeg mpg ogg ogm rm wav webm)
 for ft in $_media_fts; do alias -s $ft=mpv; done
 
-export AUTO_NOTIFY_ENABLE_SSH=1
+export AUTO_NOTIFY_ENABLE_SSH=2
 AUTO_NOTIFY_IGNORE+=(
   "docker"
   "ga"

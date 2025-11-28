@@ -16,13 +16,15 @@ let
             default = false;
             type    = bool;
           };
-          userName  = mkOption {
-            default = "";
-            type    = str;
-          };
-          userEmail = mkOption {
-            default = "";
-            type    = str;
+          user = {
+            name  = mkOption {
+              default = "";
+              type    = str;
+            };
+            email = mkOption {
+              default = "";
+              type    = str;
+            };
           };
         };
         vscode.enable   = mkEnableOption "Enable VSCodium";

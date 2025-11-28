@@ -1,7 +1,7 @@
 {pkgs, ... }:
 {
   enable = true;
-  package = pkgs.vscodium;
+  package = pkgs.vscode;
   mutableExtensionsDir = false;
   profiles.default.enableUpdateCheck = false;
   profiles.default.enableExtensionUpdateCheck = false;
@@ -47,22 +47,22 @@
       {
         name = "copilot";
         publisher = "GitHub";
-        version = "1.373.1788";
-        sha256 = "sha256-l12UNAF5Nk8hyzLw/AL08I6mAF/fJDHa0mvvD99StbE=";
+        version = "1.388.0";
+        sha256 = "sha256-7RjK8+PNI+rIuRQfCwpvswAiz991dacRO2qYhcv1vhk=";
       }
       {
         name = "copilot-chat";
         publisher = "GitHub";
-        version = "0.31.2";
-        sha256 = "sha256-7X/FwyDHHCPZu0kSLMjSFqGC3N7Ay+1x3f9gms0nnfs=";
+        version = "0.33.2";
+        sha256 = "sha256-8TgwChU+849zSd+/j3pVR/0U96QJV3jLbyf8XhTVnys=";
       }
       # Puts a small, bored cat, an enthusiastic dog, a feisty snake, a rubber duck, or Clippy 📎 in your code editor.
       #tonybaloney.vscode-pets
       {
         name = "vscode-pets";
         publisher = "tonybaloney";
-        version = "1.31.0";
-        sha256 = "sha256-/7d78wuTqHK9mP/Kj+PUMW/hvoTn4Gm6OOplASBc3jw=";
+        version = "1.34.0";
+        sha256 = "sha256-+4D9QKMB0BsIm8qy4ZNC5H87V21wgLD7ztrYJ/R3UJQ=";
       }
       # Dendron is an open-source, local-first, markdown-based, note-taking tool.
       {
@@ -83,12 +83,6 @@
         publisher = "fwcd";
         version = "0.2.35";
         sha256 = "sha256-UyiMacHjs8tbziQzrGlP5A+OSNuzIij1yFBTRuM6qmM=";
-      }
-      {
-        name = "excalidraw-editor";
-        publisher = "pomdtr";
-        version = "3.5.0";
-        sha256 = "sha256-nGv0mMKxjJLGMAbaT5z5NELuYEWnh+N0CfJoS2IZEms=";
       }
   ];
   profiles.default.userSettings = {

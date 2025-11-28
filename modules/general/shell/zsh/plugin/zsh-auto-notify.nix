@@ -2,13 +2,13 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "zsh-auto-notify";
-  version = "0.11.1";
+  version = "0.11.1-private";
 
   src = fetchFromGitHub {
-    owner = "MichaelAquilina";
+    owner = "philippdieter";
     repo = "zsh-auto-notify";
     rev = "${version}";
-    sha256 = "sha256-1+HD4rerEu0uu4hWtMORBeAJJgIgXv65McnqOpaSIV8=";
+    sha256 = "sha256-oi5jb1/MQeEN/Iur3HBVIzcvd7oNZxBMzvFxW79jzAQ=";
   };
 
   dontConfigure = true;
@@ -22,7 +22,7 @@ stdenvNoCC.mkDerivation rec {
 
   meta = with lib; {
     description = "Plugin that automatically sends out a notification when a long running task has completed.";
-    homepage = "https://github.com/MichaelAquilina/zsh-auto-notify";
+    homepage = "https://github.com/philippdieter/zsh-auto-notify";
     license = licenses.gpl3;
     platforms = platforms.unix;
   };

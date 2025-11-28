@@ -10,11 +10,11 @@ with types;
       {
         environment.systemPackages = with pkgs; [
           thunderbird
-          onlyoffice-bin
+          onlyoffice-desktopeditors
           calibre
           pinta
           imagemagick
-          pdfsam-basic
+          #pdfsam-basic
           pdfslicer
           keepassxc
           #alacritty
@@ -31,7 +31,7 @@ with types;
           #barrier
           ntfs3g
           #transgui
-          nextcloud-client
+          #nextcloud-client
           #(nextcloud-client.overrideAttrs (oldAttrs: rec {
           #    #buildInputs = [ inotify-tools libcloudproviders libsecret openssl pcre qtbase qtkeychain qttools qtwebengine qtquickcontrols2 qtgraphicaleffects qtwebsockets sqlite kio kcoreaddons ];
           #    nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [extra-cmake-modules];
@@ -79,7 +79,7 @@ with types;
           gimp
           darktable
           inkscape
-          pentablet-driver
+          xp-pen-g430-driver
         ];
       }
     )
@@ -109,8 +109,8 @@ with types;
           mkvtoolnix-cli
           makemkv
           obs-studio
-          openshot-qt
-          olive-editor
+          #openshot-qt
+          #olive-editor
           shotcut
           aegisub
           kodi

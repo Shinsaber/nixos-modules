@@ -28,6 +28,8 @@
           maven-3-8-4 = prev.callPackage ./java7/maven-3.8.4.nix {
             openjdk7 = final.openjdk7;
           };
+
+          freelens = prev.callPackage ./freelens.nix { };
         }
     )
   ];

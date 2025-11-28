@@ -3,12 +3,12 @@
 
   inputs = {
     nix-unstable.url = "nixpkgs/nixos-unstable";
-    nixos.url = "nixpkgs/nixos-25.05";
-    home-manager.url = "github:nix-community/home-manager/release-25.05";
+    nixos.url = "nixpkgs/nixos-25.11";
+    home-manager.url = "github:nix-community/home-manager/release-25.11";
     nixvim = {
-      url = "github:nix-community/nixvim";
+      url = "github:nix-community/nixvim/nixos-25.11";
       # If using a stable channel you can use `url = "github:nix-community/nixvim/nixos-<version>"`
-      inputs.nixpkgs.follows = "nix-unstable";
+      inputs.nixpkgs.follows = "nixos";
     };
   };
 
