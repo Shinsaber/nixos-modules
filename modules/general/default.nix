@@ -115,21 +115,6 @@ in
           autoUpgrade = mkEnableOption "Activate nix autoUpgrade at 12h-14h";
           optiStore   = mkEnableOption "Enable optimisation et garbage collecte";
         };
-        cortex = {
-          enable = mkEnableOption "Cortex XDR Agent";
-
-          distributionId = mkOption {
-            type = types.str;
-            example = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-            description = "Distribution ID for Cortex XDR";
-          };
-
-          distributionServer = mkOption {
-            type = types.str;
-            default = "https://distributions.traps.paloaltonetworks.com/";
-            description = "Distribution server URL for Cortex XDR";
-          };
-        };
       };
       shell = {
         vim.enable    = mkEnableOption "Activate Vim advenced config";

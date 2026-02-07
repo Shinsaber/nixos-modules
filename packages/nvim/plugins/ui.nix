@@ -13,7 +13,7 @@
     };
     # Botome info bar
     lualine = {
-      enable = true;
+      enable = false;
       settings.options.globalstatus = true;
     };
 
