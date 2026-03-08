@@ -95,6 +95,7 @@ with types;
 
         romm-db = {
           image = "mariadb:12.2.2";
+          networks  = [ "romm-network" ];
           environment = {
             MARIADB_ROOT_PASSWORD = cfg.db.rootPassword;
             MARIADB_DATABASE      = cfg.db.name;
@@ -109,6 +110,7 @@ with types;
         romm = {
           image = "rommapp/romm:4.7.0";
           dependsOn = [ "romm-db" ];
+          networks  = [ "romm-network" ];
           environment = {
             DB_HOST                   = "romm-db";
             DB_NAME                   = cfg.db.name;
