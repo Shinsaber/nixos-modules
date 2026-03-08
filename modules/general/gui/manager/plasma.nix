@@ -35,6 +35,7 @@ with types;
           spectacle
           gwenview
           okular
+          kfind # KDE file search utility
           zanshin # Getting Things Done application which aims at getting your mind like water
           plasma-browser-integration
           # xwaylandvideobridge # Utility to allow streaming Wayland windows to X applications
