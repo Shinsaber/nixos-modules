@@ -1,0 +1,54 @@
+# RomM configuration file
+# For more information about the available options, please refer to the documentation:
+
+scan:
+  # Metadata priority during scans
+  priority:
+    # Below are the default priority values used
+    metadata: # Top-level metadata source priority
+      - "ss" # Screenscraper
+      - "ra" # RetroAchievements
+      - "hasheous" # Hasheous
+      - "hltb" # HowLongToBeat
+    artwork: # Cover art and screenshots
+      - "ss" # Screenscraper
+      - "ra" # RetroAchievements
+      - "hasheous" # Hasheous
+      - "hltb" # HowLongToBeat
+    region: # Used by IGDB and ScreenScraper for regional variants
+      - "eu"
+      - "us"
+      - "jp"
+    language: # Used by ScreenScraper for descriptions
+      - "fr"
+      - "en"
+
+# EmulatorJS per-core options
+# emulatorjs:
+#   debug: true # Available options will be logged to the browser console
+#   cache_limit: null # Cache limit per ROM (in bytes)
+#   disable_batch_bootup: false
+#   disable_auto_unload: false
+#   settings:
+#     parallel_n64: # Use the exact core name
+#       vsync: disabled
+#     snes9x:
+#       snes9x_region: ntsc
+#     default: # These settings apply to all cores
+#       fps: show
+#   netplay:
+#     enabled: true
+#     ice_servers:
+#       - urls: "stun:stun.relay.metered.ca:80"
+#       - urls: "turn:global.relay.metered.ca:80"
+#         username: "<username>"
+#         credential: "<password>"
+#   controls: # https://emulatorjs.org/docs4devs/control-mapping/
+#     snes9x:
+#       0: # Player 1
+#         0: # A MAPPING FOR EACH BUTTON MUST BE SET!
+#           value: x # Mapping for keyboard
+#           value2: BUTTON_2 # Mapping for connected controller
+#       1: # Player 2
+#       2: # Player 3
+#       3: # Player 4

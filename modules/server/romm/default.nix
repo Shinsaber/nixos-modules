@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.shincraft.server.romm;
@@ -75,6 +75,12 @@ with types;
       description = "Clé API SteamGridDB";
     };
 
+    configFile = mkOption {
+      type        = package;
+      default     = pkgs.writeText "romm-config.yml" (builtins.readFile ./config.yml);
+      description = "Fichier de configuration RomM (config.yml)";
+    };
+
     hasheous.enable = mkOption {
       type        = bool;
       default     = true;
@@ -125,6 +131,7 @@ with types;
           };
           volumes = [
             "/var/lib/romm/redis:/redis-data"
+            "${cfg.configFile}:/romm/config/config.yml"
             "${cfg.rommDataPath}/resources:/romm/resources"
             "${cfg.rommDataPath}/library:/romm/library"
             "${cfg.rommDataPath}/assets:/romm/assets"
