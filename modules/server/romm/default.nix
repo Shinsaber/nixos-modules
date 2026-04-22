@@ -97,6 +97,21 @@ with types;
         "d /var/lib/romm/db        0755 root root -"
       ];
 
+      # Networks
+      systemd.services."podman-romm-network" = {
+        path = [ pkgs.podman ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStop = "${pkgs.podman}/bin/podman network rm -f romm-network";
+        };
+        script = ''
+          podman network inspect romm-network || podman network create romm-network
+        '';
+        before   = [ "podman-romm.service" "podman-romm-db.service" ];
+        wantedBy = [ "podman-romm.service" "podman-romm-db.service" ];
+      };
+
       virtualisation.oci-containers.containers = {
 
         romm-db = {

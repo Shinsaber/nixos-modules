@@ -9,6 +9,10 @@
     # Nix file code
     bbenoist.nix
     jnoortheen.nix-ide
+    # Go
+    #golang.Go
+    # Vue
+    #Vue.volar
     # Java
     redhat.java
     mathiasfrohlich.kotlin
@@ -19,6 +23,7 @@
     vscjava.vscode-java-dependency
     # The Remote - SSH extension lets you use any remote machine with a SSH server as your development environment. This can greatly simplify development and troubleshooting in a wide variety of situations.
     ms-vscode-remote.remote-ssh
+    ms-azuretools.vscode-containers
     # It helps you to easily access your projects, no matter where they are located. Don't miss those important projects anymore.
     alefragnani.project-manager
     # LanguageTool integration for VS Code
@@ -52,8 +57,8 @@
       {
         name = "copilot-chat";
         publisher = "GitHub";
-        version = "0.37.9";
-        sha256 = "sha256-AGfjenshM1yQ/rHDpCbCU2HDSS4cPGIPxe8MQ7O0/Dc=";
+        version = "0.41.2";
+        sha256 = "sha256-oXu2Uv6sNP9eV1kut/TBnbYX2GG1wg4o4XUf7G+Zj/8=";
       }
       # Dendron is an open-source, local-first, markdown-based, note-taking tool.
       {
