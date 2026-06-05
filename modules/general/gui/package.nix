@@ -15,7 +15,7 @@ with types;
           pinta
           imagemagick
           #pdfsam-basic
-          pdfslicer
+          #pdfslicer
           keepassxc
           #alacritty
 
@@ -52,9 +52,10 @@ with types;
     (mkIf cfg.pkgs.android.enable
       (mkMerge [
         {
-          programs.adb.enable = true;
+          #programs.adb.enable = true;
           environment.systemPackages = with pkgs; [
             adb-sync
+            android-tools
           ];
           virtualisation.waydroid.enable = true;
         }
