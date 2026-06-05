@@ -54,12 +54,6 @@
     redhat.vscode-yaml
 
   ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-      {
-        name = "copilot-chat";
-        publisher = "GitHub";
-        version = "0.41.2";
-        sha256 = "sha256-oXu2Uv6sNP9eV1kut/TBnbYX2GG1wg4o4XUf7G+Zj/8=";
-      }
       # Dendron is an open-source, local-first, markdown-based, note-taking tool.
       {
         name = "dendron";
@@ -106,6 +100,8 @@
       "opnsense"
     ];
     gitlab.showPipelineUpdateNotifications = true;
+    extensions.autoCheckUpdates = false;
+    update.mode = "none";
     hediet.vscode-drawio = {
       offline = true;
       theme = "dark"; # automatic, min, atlas, dark, Kennedy, sketch
@@ -116,6 +112,7 @@
       position = "explorer";
       petColor = "black";
     };
+    chat.viewSessions.orientation = "stacked";
     projectManager.tags = [
       "Personal"
       "Professional"
