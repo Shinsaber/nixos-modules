@@ -115,7 +115,7 @@ with types;
       virtualisation.oci-containers.containers = {
 
         romm-db = {
-          image = "mariadb:12.2.2";
+          image = "mariadb:12.3.2";
           networks  = [ "romm-network" ];
           environment = {
             MARIADB_ROOT_PASSWORD = cfg.db.rootPassword;
@@ -129,7 +129,7 @@ with types;
         };
 
         romm = {
-          image = "rommapp/romm:4.7.0";
+          image = "rommapp/romm:4.8.1";
           dependsOn = [ "romm-db" ];
           networks  = [ "romm-network" ];
           environment = {
