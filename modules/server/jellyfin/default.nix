@@ -29,7 +29,7 @@ with types;
         enable       = true;
         openFirewall = true;
       };
-      services.jellyseerr = {
+      services.seerr = {
         enable = true;
         openFirewall = true;
       };

@@ -55,7 +55,7 @@ with types;
           #programs.adb.enable = true;
           environment.systemPackages = with pkgs; [
             adb-sync
-            android-tools
+            #android-tools
           ];
           virtualisation.waydroid.enable = true;
         }
