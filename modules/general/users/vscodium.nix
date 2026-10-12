@@ -32,6 +32,8 @@
     #ms-toolsai.jupyter
     #johnpapa.vscode-peacock
 
+    anthropic.claude-code
+
     # All you need for Markdown (keyboard shortcuts, table of contents, auto preview and more).
     yzhang.markdown-all-in-one
     # Rich PlantUML support for Visual Studio Code.
@@ -42,9 +44,6 @@
     gitlab.gitlab-workflow
     hediet.vscode-drawio
     #continue.continue
-
-    #github.copilot
-    #github.copilot-chat
     
     ms-kubernetes-tools.vscode-kubernetes-tools
     redhat.vscode-yaml

@@ -7,7 +7,7 @@ with lib;
     ./plugins/cmp.nix
     ./plugins/telescope.nix
     ./plugins/treesitter.nix
-    ./plugins/copilot.nix
+    #./plugins/copilot.nix
   ];
 
   config = mkMerge [
