@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(nix eval:*)",
+      "Bash(nix flake show:*)",
+      "Bash(nix flake metadata:*)",
+      "Bash(nix search:*)",
+      "Bash(nix-instantiate --parse:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)"
+    ],
+    "ask": [
+      "Bash(nix flake update:*)",
+      "Bash(nix flake lock:*)",
+      "Bash(nix build:*)",
+      "Bash(nixos-rebuild:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}

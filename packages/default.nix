@@ -29,9 +29,6 @@
             openjdk7 = final.openjdk7;
           };
 
-          # Add Cortex XDR agent
-          cortex-xdr = prev.callPackage ./cortex { };
-
           freelens = prev.callPackage ./freelens.nix { };
         }
     )

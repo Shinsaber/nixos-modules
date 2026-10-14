@@ -9,6 +9,7 @@ Ressortir ma configuration pour mes postes et serveurs dans des modules standard
 ```
 config.shincraft
 ├──system
+│  ├──kanata        = Activate kanata keyboard remapping (space + jkl; = arrows)
 │  ├──vaapi         = Hardware Accelerators (Intel VAAPI)
 │  ├──batterysave   = Activate systemd disable service on battery
 │  └──nix
@@ -32,12 +33,13 @@ config.shincraft
 │     └──home-config
 │        ├──packages      = List of package to install only for this user
 │        ├──git
-│        │  ├──enable    = Activate user config for git
-│        │  ├──userName  = Git user name
-│        │  └──userEmail = Git email
+│        │  ├──enable     = Activate user config for git
+│        │  └──user
+│        │     ├──name    = Git user name
+│        │     └──email   = Git email
 │        ├──ssh
 │        │  ├──enable       = Activate user config for ssh
-│        │  └──listAlias    = Add alias for SSH client
+│        │  └──listAlias    = Add alias for SSH client (see below)
 │        ├──vscode.enable   = Enable VSCodium and addon
 │        ├──chromium.enable = Enable Chromium Browser
 │        ├──kube.enable     = Install tools for managing kube cluster
@@ -78,10 +80,40 @@ config.shincraft.server
 │  ├──enable = Install nginx with SSL/TLS configuration
 │  ├──mail   = Email for ACME/Let's Encrypt certificates
 │  └──domain = Configuration per domain and subdomain
-├──jellyfin = Install Jellyfin media server with hardware acceleration
+├──jellyfin   = Install Jellyfin media server (+ Seerr) with hardware acceleration
+├──jellyseerr = (déclarée mais sans effet : Seerr est installé avec jellyfin)
 ├──transmission
 │  ├──enable    = Install transmission torrent client
 │  └──whitelist = IP whitelist for web interface
+├──nextcloud
+│  ├──enable        = Install Nextcloud (PostgreSQL + Redis)
+│  ├──hostName      = Domain name used to reach Nextcloud
+│  ├──package       = Nextcloud package (default: nextcloud33)
+│  ├──https         = Enable HTTPS (default: true)
+│  ├──admin
+│  │  ├──user         = Admin user name (default: admin)
+│  │  └──passwordFile = Path to a file containing the admin password
+│  ├──dataDir       = Data directory (default: /var/lib/nextcloud)
+│  ├──maxUploadSize = Max upload size (default: 16G)
+│  ├──extraApps     = Extra Nextcloud apps
+│  └──extraSettings = Extra Nextcloud settings
+├──romm
+│  ├──enable        = Install RomM (ROM Manager) with MariaDB (Podman containers)
+│  ├──port          = Listening port (default: 8095)
+│  ├──rommDataPath  = Path of the ROM library (resources/, library/, assets/)
+│  ├──db
+│  │  ├──name         = MariaDB database name (default: romm)
+│  │  ├──user         = MariaDB user (default: romm-user)
+│  │  ├──password     = MariaDB user password
+│  │  └──rootPassword = MariaDB root password
+│  ├──authSecretKey = RomM auth secret (`openssl rand -hex 32`)
+│  ├──screenscraper
+│  │  ├──user     = ScreenScraper user
+│  │  └──password = ScreenScraper password
+│  ├──retroachievements.apiKey = RetroAchievements API key
+│  ├──steamgriddb.apiKey       = SteamGridDB API key
+│  ├──hasheous.enable          = Enable Hasheous metadata provider (default: true)
+│  └──configFile               = RomM config.yml (default: ./modules/server/romm/config.yml)
 └──auth
    ├──enable = Install OpenLDAP and KeyCloak authentication
    ├──suffix = LDAP suffix (default: dc=example,dc=com)
@@ -90,13 +122,50 @@ config.shincraft.server
    └──rootPW = Root password for LDAP admin
 ```
 
+> ⚠ Les mots de passe et clés passés en chaîne (`romm.*`, `auth.rootPW`) sont copiés
+> dans `/nix/store`, lisible par tous les utilisateurs de la machine. Voir
+> [docs/secrets.md](docs/secrets.md).
+
+### Plymouth (`config.boot.plymouth`)
+
+Options ajoutées par `nixosModules.general` pour le thème de démarrage :
+
+```
+config.boot.plymouth
+├──name        = Name displayed on the splash (default: NixOS)
+├──colorNormal = Color(r, g, b) (default: Color(0.2400, 0.3500, 0.5900))
+└──colorTinted = Color(r, g, b) (default: Color(0.3600, 0.5200, 0.6700))
+```
+
+### Alias SSH (`home-config.ssh.listAlias`)
+
+Les alias sont écrits dans `programs.ssh.settings` de home-manager. Les deux formats sont
+acceptés : directives OpenSSH (recommandé) ou ancien format `matchBlocks`, converti
+automatiquement.
+
+```nix
+ssh = {
+  enable = true;
+  listAlias = {
+    "mon-serveur" = {
+      HostName     = "192.168.1.10";
+      User         = "root";
+      LocalForward = [ { bind.port = 3306; host.address = "localhost"; host.port = 3306; } ];
+    };
+    # Ancien format, toujours accepté
+    "autre" = { hostname = "192.168.1.11"; user = "root"; port = 22; };
+  };
+};
+```
+
 ## Packages personnalisés
 
 Ce flake inclut également des packages personnalisés :
 
 - **`nixvim`** : Configuration Neovim avancée avec LSP, Telescope, et plugins
-- **`openjdk7`** : OpenJDK 7 pour applications legacy
+- **`openjdk7`** : OpenJDK 7 pour applications legacy (avec `maven-3-8-4` et `java7-helper`)
 - **`jellyfin-web`** : Version modifiée avec skip-intro-button intégré
+- **`freelens`** : Client graphique Kubernetes
 
 ## Exemples d'utilisation
 
@@ -122,8 +191,10 @@ Ce flake inclut également des packages personnalisés :
       home-config = {
         git = {
           enable = true;
-          userName = "Mon Nom";
-          userEmail = "mon@email.com";
+          user = {
+            name  = "Mon Nom";
+            email = "mon@email.com";
+          };
         };
         vscode.enable = true;
         nodejs.enable = true;

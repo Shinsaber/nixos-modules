@@ -24,12 +24,16 @@ with types;
     nginx =  {
       enable = mkEnableOption "Install nginx in the systeme";
       mail = mkOption {
-        default = null;
-        type    = str;
-        example = "user@domain.tld";
+        default     = null;
+        type        = nullOr str;
+        example     = "user@domain.tld";
+        description = "Email du compte ACME (Let's Encrypt)";
       };
       domain = mkOption {
-        type    = attrsOf ( attrsOf ( submodule subDomainModule ) );
+        default     = {};
+        type        = attrsOf ( attrsOf ( submodule subDomainModule ) );
+        example     = { "domain.tld"."www" = { host = "127.0.0.1"; port = 8080; }; };
+        description = "Reverse proxy par domaine puis sous-domaine";
       };
     };
   };

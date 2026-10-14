@@ -39,25 +39,29 @@ let
             type    = bool;
           };
           listAlias = mkOption {
-            default = {};
-            type    = attrs;
+            default     = {};
+            type        = attrs;
+            example     = { "mon-serveur" = { HostName = "192.168.1.10"; User = "root"; }; };
+            description = ''
+              Alias SSH, écrits dans `programs.ssh.settings` de home-manager.
+              Accepte les directives OpenSSH (`HostName`, `User`, `LocalForward`…) ou
+              l'ancien format `matchBlocks` (`hostname`, `user`, `localForwards`…), converti automatiquement.
+            '';
           };
         };
       };
       user-config = {
         uid = mkOption {
-          default     = "1000";
+          default     = 1000;
           type        = ints.u16;
-          example     = "1000";
-          description = ''
-          '';
+          example     = 1000;
+          description = "UID de l'utilisateur";
         };
         extraGroups = mkOption {
-          default     = [ "" ];
+          default     = [];
           type        = listOf str;
           example     = [ "wheel" "disk" ];
-          description = ''
-          '';
+          description = "Groupes supplémentaires de l'utilisateur";
         };
       };  
     };
@@ -89,7 +93,8 @@ in
     };
     shincraft = {
       users  = mkOption {
-        type = attrsOf ( submodule userModule );
+        default = {};
+        type    = attrsOf ( submodule userModule );
       };
       gui = {
         enable = mkEnableOption "Enable Plasma gui";

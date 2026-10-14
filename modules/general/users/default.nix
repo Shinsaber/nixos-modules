@@ -3,6 +3,52 @@ with lib;
 with types;  
 let
   vscodeConfig = (import ./vscodium.nix){pkgs = unstable;};
+
+  # Conversion des alias SSH de l'ancien format home-manager (`programs.ssh.matchBlocks`,
+  # clés en camelCase) vers `programs.ssh.settings` (directives OpenSSH).
+  # Les clés déjà au format OpenSSH (ex. `HostName`) sont conservées telles quelles.
+  sshLegacyKeys = {
+    hostname            = "HostName";
+    user                = "User";
+    port                = "Port";
+    identityFile        = "IdentityFile";
+    identitiesOnly      = "IdentitiesOnly";
+    identityAgent       = "IdentityAgent";
+    proxyCommand        = "ProxyCommand";
+    proxyJump           = "ProxyJump";
+    forwardAgent        = "ForwardAgent";
+    forwardX11          = "ForwardX11";
+    forwardX11Trusted   = "ForwardX11Trusted";
+    localForwards       = "LocalForward";
+    remoteForwards      = "RemoteForward";
+    dynamicForwards     = "DynamicForward";
+    serverAliveInterval = "ServerAliveInterval";
+    serverAliveCountMax = "ServerAliveCountMax";
+    sendEnv             = "SendEnv";
+    setEnv              = "SetEnv";
+    compression         = "Compression";
+    checkHostIP         = "CheckHostIP";
+    certificateFile     = "CertificateFile";
+    addressFamily       = "AddressFamily";
+    addKeysToAgent      = "AddKeysToAgent";
+    hashKnownHosts      = "HashKnownHosts";
+    userKnownHostsFile  = "UserKnownHostsFile";
+    controlMaster       = "ControlMaster";
+    controlPath         = "ControlPath";
+    controlPersist      = "ControlPersist";
+    kexAlgorithms       = "KexAlgorithms";
+  };
+  sshAliasToSettings = alias:
+    let
+      extraOptions = alias.extraOptions or {};
+      header =
+        if alias ? match then { header = "Match ${alias.match}"; }
+        else if alias ? host then { header = "Host ${alias.host}"; }
+        else {};
+      renamed = mapAttrs' (key: value: nameValuePair (sshLegacyKeys.${key} or key) value)
+        (removeAttrs alias [ "extraOptions" "match" "host" ]);
+    in
+    header // renamed // extraOptions;
 in
 {
   config =
@@ -140,7 +186,6 @@ in
               pu = "push";
             };
             init.defaultBranch = "main";
-            core.editor = "vim";
             core.pager = "bat --paging=always";
             #protocol.keybase.allow = "always";
             #credential.helper = "store --file ~/.git-credentials";
@@ -150,17 +195,25 @@ in
         });
         ssh = (mkIf cfg.home-config.ssh.enable {
           enable = true;
-          matchBlocks = mkMerge [
+          # Les anciennes valeurs par défaut de home-manager sont reprises explicitement dans "*"
+          enableDefaultConfig = false;
+          settings = mkMerge [
             {
               "*" = {
-                controlMaster  = "auto";
-                controlPersist = "10m";
-                compression = true;
+                ForwardAgent        = false;
+                AddKeysToAgent      = "no";
+                Compression         = true;
+                ServerAliveInterval = 0;
+                ServerAliveCountMax = 3;
+                HashKnownHosts      = false;
+                UserKnownHostsFile  = "~/.ssh/known_hosts";
+                ControlMaster       = "auto";
+                ControlPath         = "~/.ssh/master-%r@%n:%p";
+                ControlPersist      = "10m";
               };
             }
-            cfg.home-config.ssh.listAlias
+            (mapAttrs (_: sshAliasToSettings) cfg.home-config.ssh.listAlias)
           ];
-          #hashKnownHost = false;
         });
         chromium = (mkIf cfg.home-config.chromium.enable {
           enable = true;
