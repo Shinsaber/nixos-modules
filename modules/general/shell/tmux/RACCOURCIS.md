@@ -65,7 +65,7 @@
 ### Commandes depuis le terminal
 
 ```bash
-tmux ls                    # Lister toutes les sessions
+tmux ls                   # Lister toutes les sessions
 tmux new -s nom           # Créer session nommée
 tmux attach -t nom        # Se connecter à une session
 tmux kill-session -t nom  # Tuer une session
