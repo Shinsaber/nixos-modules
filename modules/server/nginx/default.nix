@@ -14,6 +14,26 @@ let
         default = 80;
         type    = ints.u16;
       };
+      protocol = mkOption {
+        default     = "http";
+        type        = enum [ "http" "https" ];
+        description = "Protocole vers le backend (`https` pour Kanidm, certificat non vérifié)";
+      };
+      maxBodySize = mkOption {
+        default     = null;
+        type        = nullOr str;
+        example     = "16G";
+        description = "Taille maximale d'une requête (`client_max_body_size`, 1m par défaut dans nginx)";
+      };
+      allowFrom = mkOption {
+        default     = [];
+        type        = listOf str;
+        example     = [ "10.8.0.0/24" "192.168.1.0/24" ];
+        description = ''
+          Adresses ou réseaux autorisés (ex. le VPN) ; les autres reçoivent une 403.
+          Liste vide : accès ouvert. Le challenge ACME reste accessible pour le renouvellement.
+        '';
+      };
     };
   };
 in
@@ -81,8 +101,15 @@ with types;
                     enableACME = true;
                     forceSSL = true;
                     locations."/" = {
-                      proxyPass = "http://${config.host}:${toString config.port}";
+                      proxyPass = "${config.protocol}://${config.host}:${toString config.port}";
                       proxyWebsockets = true; # needed if you need to use WebSocket
+                      # Filtrage sur la location et non sur le server : la location ACME
+                      # (/.well-known/acme-challenge) doit rester joignable par Let's Encrypt.
+                      extraConfig = concatStringsSep "\n" (
+                        optional (config.maxBodySize != null) "client_max_body_size ${config.maxBodySize};"
+                        ++ map (net: "allow ${net};") config.allowFrom
+                        ++ optional (config.allowFrom != []) "deny all;"
+                      );
                     };
                   };
                 }

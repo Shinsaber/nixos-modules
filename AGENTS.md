@@ -21,7 +21,7 @@ Sorties du flake ([flake.nix](flake.nix)) :
 
 | Sortie                     | Contenu                                                                 |
 |----------------------------|-------------------------------------------------------------------------|
-| `nixosModules.general`     | `./packages` (overlay) + `./modules/general` + home-manager             |
+| `nixosModules.general`     | `./packages` (overlay) + `./modules/general` + home-manager, disko, sops-nix |
 | `nixosModules.server`      | `./packages` (overlay) + `./modules/server` (toujours combiné à `general`) |
 | `packages.x86_64-linux.nixvim` | Neovim configuré via nixvim (`./packages/nvim`)                     |
 | `nixos`, `unstable`        | Les nixpkgs réexportés ; les hosts appellent `shinsaber.nixos.lib.nixosSystem` |
@@ -127,15 +127,14 @@ nix eval --no-write-lock-file \
 - Ne pas lancer `nix flake update` / modifier `flake.lock` sans demande explicite.
 - Ne pas modifier le dépôt des hosts sauf demande explicite.
 - Ne pas mettre de secrets réels dans ce dépôt (il est public sur GitHub). Pour un nouveau
-  secret, préférer une option `…File` (chemin vers un fichier) plutôt qu'une chaîne, car les
-  chaînes finissent lisibles dans `/nix/store`.
+  secret : option `…File` de type `nullOr str`, `null` par défaut = secret sops nommé
+  `<service>/<nom>` (voir [docs/secrets.md](docs/secrets.md) et le module `kanidm`). Jamais de chaîne :
+  elle finirait lisible dans `/nix/store`.
 - Ne pas toucher aux images de `modules/general/system/splash/src/` (thèmes Plymouth).
 
 ## Points connus du code (dette existante)
 
 À connaître pour ne pas être surpris ; ne pas corriger sans demande :
-- Secrets passés en chaînes (RomM, `auth.rootPW`) : besoin d'analyse tracé dans
-  [docs/secrets.md](docs/secrets.md). Ne pas ajouter de nouvelle option secrète en chaîne.
 - `shincraft.server.jellyseerr` est déclarée mais sans effet (Seerr est activé avec `jellyfin`).
 - `home-config.ssh.listAlias` accepte l'ancien format `matchBlocks` grâce à une conversion
   dans [modules/general/users/default.nix](modules/general/users/default.nix)

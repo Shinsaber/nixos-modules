@@ -8,6 +8,9 @@ with types;
 {
   imports = [
     ./splash
+    ./proxmox-guest.nix
+    ./sops.nix
+    ./backup.nix
   ];
 
   config = mkMerge [

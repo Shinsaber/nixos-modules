@@ -12,6 +12,24 @@ config.shincraft
 │  ├──kanata        = Activate kanata keyboard remapping (space + jkl; = arrows)
 │  ├──vaapi         = Hardware Accelerators (Intel VAAPI)
 │  ├──batterysave   = Activate systemd disable service on battery
+│  ├──sops
+│  │  ├──enable          = Secrets chiffrés avec sops-nix (clé SSH host)
+│  │  └──defaultSopsFile = Fichier sops du host (voir docs/secrets.md)
+│  ├──backup
+│  │  ├──enable    = Sauvegardes restic vers S3, un dépôt + une clé par service
+│  │  ├──bucket    = Bucket commun (dépôts <bucket>/<host>/<job>)
+│  │  ├──hostname  = Point d'accès S3
+│  │  ├──region    = Région S3
+│  │  ├──key       = Access key ID (secret sops backup/s3-secret)
+│  │  ├──startAt   = Heure des sauvegardes (défaut : 03:00)
+│  │  ├──pruneOpts = Rétention (défaut : 7 jours, 4 semaines, 6 mois)
+│  │  └──jobs."<job>" = Remplis par les modules (nextcloud, kanidm, romm) : paths, postgresDatabases, prepareCommand, pruneOpts, enable
+│  ├──proxmoxGuest
+│  │  ├──enable      = Profil de VM invitée Proxmox (agent QEMU, virtio, SSH, bootloader)
+│  │  ├──firmware    = "bios" (grub) ou "uefi" (systemd-boot), obligatoire
+│  │  ├──device      = Disque système (défaut : scsi0)
+│  │  ├──disko       = Partitionne le disque système avec disko (nixos-anywhere)
+│  │  └──rootSshKeys = Clés SSH publiques autorisées pour root
 │  └──nix
 │     ├──autoUpgrade = Activate nix autoUpgrade at 12h-14h
 │     └──optiStore   = Enable optimisation et garbage collecte
@@ -79,52 +97,90 @@ config.shincraft.server
 ├──nginx
 │  ├──enable = Install nginx with SSL/TLS configuration
 │  ├──mail   = Email for ACME/Let's Encrypt certificates
-│  └──domain = Configuration per domain and subdomain
+│  └──domain."<domaine>"."<sous-domaine>"
+│     ├──host        = Backend host (default: www)
+│     ├──port        = Backend port (default: 80)
+│     ├──protocol    = Backend protocol: http (default) or https
+│     ├──maxBodySize = client_max_body_size (ex. "16G")
+│     └──allowFrom   = Allowed networks, others get 403 (ex. VPN)
 ├──jellyfin   = Install Jellyfin media server (+ Seerr) with hardware acceleration
 ├──jellyseerr = (déclarée mais sans effet : Seerr est installé avec jellyfin)
 ├──transmission
 │  ├──enable    = Install transmission torrent client
 │  └──whitelist = IP whitelist for web interface
 ├──nextcloud
-│  ├──enable        = Install Nextcloud (PostgreSQL + Redis)
-│  ├──hostName      = Domain name used to reach Nextcloud
-│  ├──package       = Nextcloud package (default: nextcloud33)
-│  ├──https         = Enable HTTPS (default: true)
+│  ├──enable         = Install Nextcloud (PostgreSQL + Redis)
+│  ├──hostName       = Domain name used to reach Nextcloud
+│  ├──package        = Nextcloud package (default: nextcloud33)
+│  ├──https          = Enable HTTPS (default: true)
 │  ├──admin
-│  │  ├──user         = Admin user name (default: admin)
+│  │  ├──user         = Admin created at install (default: none, use nextcloud-occ)
 │  │  └──passwordFile = Path to a file containing the admin password
-│  ├──dataDir       = Data directory (default: /var/lib/nextcloud)
-│  ├──maxUploadSize = Max upload size (default: 16G)
-│  ├──extraApps     = Extra Nextcloud apps
-│  └──extraSettings = Extra Nextcloud settings
-├──romm
-│  ├──enable        = Install RomM (ROM Manager) with MariaDB (Podman containers)
-│  ├──port          = Listening port (default: 8095)
-│  ├──rommDataPath  = Path of the ROM library (resources/, library/, assets/)
-│  ├──db
-│  │  ├──name         = MariaDB database name (default: romm)
-│  │  ├──user         = MariaDB user (default: romm-user)
-│  │  ├──password     = MariaDB user password
-│  │  └──rootPassword = MariaDB root password
-│  ├──authSecretKey = RomM auth secret (`openssl rand -hex 32`)
-│  ├──screenscraper
-│  │  ├──user     = ScreenScraper user
-│  │  └──password = ScreenScraper password
-│  ├──retroachievements.apiKey = RetroAchievements API key
-│  ├──steamgriddb.apiKey       = SteamGridDB API key
-│  ├──hasheous.enable          = Enable Hasheous metadata provider (default: true)
-│  └──configFile               = RomM config.yml (default: ./modules/server/romm/config.yml)
-└──auth
-   ├──enable = Install OpenLDAP and KeyCloak authentication
-   ├──suffix = LDAP suffix (default: dc=example,dc=com)
-   ├──name   = Organization name
-   ├──rootCN = Root CN for LDAP admin
-   └──rootPW = Root password for LDAP admin
+│  ├──dataDir        = Data directory (default: /var/lib/nextcloud)
+│  ├──maxUploadSize  = Max upload size (default: 16G)
+│  ├──openFirewall   = Open port 80 for the reverse proxy
+│  ├──trustedProxies = Reverse proxy addresses (trusted_proxies)
+│  ├──apps           = Apps packaged in nixpkgs, by name (App Store disabled)
+│  ├──extraApps      = Other apps (fetchNextcloudApp)
+│  ├──s3
+│  │  ├──enable       = S3 primary storage (choose at install time)
+│  │  ├──bucket       = Bucket name
+│  │  ├──hostname     = S3 endpoint (ex. s3.gra.io.cloud.ovh.net)
+│  │  ├──region       = Region (ex. gra)
+│  │  ├──key          = Access key ID
+│  │  ├──secretFile   = Secret key file (default: sops nextcloud/s3-secret)
+│  │  └──usePathStyle = Path-style bucket addressing (default: false)
+│  ├──oidc
+│  │  ├──enable           = SSO login with user_oidc (ex. Kanidm)
+│  │  ├──name             = Provider name on the login button (default: Kanidm)
+│  │  ├──clientId         = OIDC client ID (default: nextcloud)
+│  │  ├──discoveryUri     = OpenID discovery URL
+│  │  ├──clientSecretFile = Client secret file (default: sops oidc/<clientId>)
+│  │  └──mappingUid       = Claim used as user ID (default: preferred_username)
+│  ├──onlyoffice
+│  │  ├──enable            = Edit documents with ONLYOFFICE (sops onlyoffice/jwt-secret)
+│  │  └──documentServerUrl = Public URL of the Document Server
+│  └──extraSettings  = Extra Nextcloud settings
+├──kanidm
+│  ├──enable               = Install Kanidm identity provider (OIDC, TOTP, passkeys)
+│  ├──domain               = Public domain (also the account identity, do not change)
+│  ├──package              = Kanidm package (default: kanidmWithSecretProvisioning_1_11)
+│  ├──port                 = HTTPS port (default: 8443)
+│  ├──openFirewall         = Open the port for the reverse proxy
+│  ├──tls.chainFile/keyFile = TLS certificate (default: generated self-signed)
+│  ├──adminPasswordFile    = admin password (default: sops kanidm/admin-password)
+│  ├──idmAdminPasswordFile = idm_admin password (default: sops kanidm/idm-admin-password)
+│  └──oauth2."<client>"
+│     ├──displayName   = Name in the Kanidm portal
+│     ├──originUrl     = Exact OAuth2 redirect URL(s)
+│     ├──originLanding = Service home page
+│     ├──group         = Access group (default: <client>_users)
+│     ├──scopes        = Granted scopes (default: openid email profile)
+│     └──secretFile    = Client secret file (default: sops oidc/<client>)
+├──onlyoffice
+│  ├──enable                = Install ONLYOFFICE Document Server (PostgreSQL + RabbitMQ)
+│  ├──hostName              = Public domain of the Document Server
+│  ├──openFirewall          = Open port 80 for the reverse proxy
+│  ├──jwtSecretFile         = JWT secret shared with Nextcloud (default: sops onlyoffice/jwt-secret)
+│  └──allowLocalConnections = Allow downloads from private IPs (internal DNS, VPN)
+└──romm
+   ├──enable        = Install RomM (ROM Manager) with MariaDB (Podman containers)
+   ├──port          = Listening port (default: 8095)
+   ├──rommDataPath  = Path of the ROM library (resources/, library/, assets/)
+   ├──db
+   │  ├──name = MariaDB database name (default: romm)
+   │  └──user = MariaDB user (default: romm-user)
+   ├──screenscraper
+   │  ├──enable = Enable ScreenScraper (sops romm/screenscraper-password)
+   │  └──user   = ScreenScraper user
+   ├──retroachievements.enable = Enable RetroAchievements (sops romm/retroachievements-api-key)
+   ├──steamgriddb.enable       = Enable SteamGridDB (sops romm/steamgriddb-api-key)
+   ├──hasheous.enable          = Enable Hasheous metadata provider (default: true)
+   └──configFile               = RomM config.yml (default: ./modules/server/romm/config.yml)
 ```
 
-> ⚠ Les mots de passe et clés passés en chaîne (`romm.*`, `auth.rootPW`) sont copiés
-> dans `/nix/store`, lisible par tous les utilisateurs de la machine. Voir
-> [docs/secrets.md](docs/secrets.md).
+> Les secrets (RomM, Kanidm, S3 et OIDC de Nextcloud) passent par sops-nix
+> (`shincraft.system.sops`) : noms attendus et mise en place dans [docs/secrets.md](docs/secrets.md).
 
 ### Plymouth (`config.boot.plymouth`)
 
@@ -203,6 +259,26 @@ Ce flake inclut également des packages personnalisés :
   };
 }
 ```
+
+### VM Proxmox
+
+Création de la VM, installation avec nixos-anywhere et mises à jour à distance :
+voir [docs/proxmox.md](docs/proxmox.md).
+
+### Nextcloud
+
+Compte admin en CLI, apps gérées par Nix, reverse proxy et stockage S3 :
+voir [docs/nextcloud.md](docs/nextcloud.md).
+
+### Sauvegardes
+
+restic vers S3, un dépôt et une clé de chiffrement par service :
+voir [docs/backup.md](docs/backup.md).
+
+### Kanidm (SSO)
+
+Fournisseur d'identité OIDC avec TOTP et passkeys, comptes et branchement de Nextcloud :
+voir [docs/kanidm.md](docs/kanidm.md). Secrets : [docs/secrets.md](docs/secrets.md).
 
 ### Configuration serveur media
 

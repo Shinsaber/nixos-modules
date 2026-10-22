@@ -10,9 +10,17 @@
       # If using a stable channel you can use `url = "github:nix-community/nixvim/nixos-<version>"`
       #inputs.nixpkgs.follows = "nixos";
     };
+    disko = {
+      url = "github:nix-community/disko/latest";
+      inputs.nixpkgs.follows = "nixos";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixos";
+    };
   };
 
-  outputs = { self, nixos, nix-unstable, home-manager, nixvim, ... }:
+  outputs = { self, nixos, nix-unstable, home-manager, nixvim, disko, sops-nix, ... }:
     let
       system = "x86_64-linux";
       nixvim' = nixvim.legacyPackages.${system};
@@ -33,6 +41,8 @@
             ./packages
             ./modules/general
             home-manager.nixosModules.home-manager
+            disko.nixosModules.disko
+            sops-nix.nixosModules.sops
             { _module.args.packages = { nixvim = nvim; }; }
             { _module.args.unstable = pkgsUnstable; }
           ];

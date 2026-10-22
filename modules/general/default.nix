@@ -116,6 +116,110 @@ in
         kanata        = mkEnableOption "Enable kanata service";
         vaapi         = mkEnableOption "Hardware Accelerators";
         batterysave   = mkEnableOption "Activate systemd disable service on battery";
+        sops          = {
+          enable          = mkEnableOption "Secrets chiffrés avec sops-nix (déchiffrés par la clé SSH host)";
+          defaultSopsFile = mkOption {
+            type        = nullOr path;
+            default     = null;
+            example     = literalExpression "./secrets/mavm.yaml";
+            description = ''
+              Fichier sops par défaut du host. Les modules serveur y cherchent leurs secrets
+              sous des noms fixes (`nextcloud/s3-secret`, `romm/db-password`…).
+            '';
+          };
+        };
+        backup        = {
+          enable    = mkEnableOption "Sauvegardes restic vers S3 (un dépôt et une clé de chiffrement par service)";
+          bucket    = mkOption {
+            type        = str;
+            example     = "backups";
+            description = "Bucket S3 commun ; chaque service a son dépôt `<bucket>/<host>/<service>`";
+          };
+          hostname  = mkOption {
+            type        = str;
+            example     = "s3.gra.io.cloud.ovh.net";
+            description = "Point d'accès S3";
+          };
+          region    = mkOption {
+            type        = str;
+            example     = "gra";
+            description = "Région S3";
+          };
+          key       = mkOption {
+            type        = str;
+            description = "Access key ID ; la clé secrète est le secret sops `backup/s3-secret`";
+          };
+          startAt   = mkOption {
+            type        = str;
+            default     = "*-*-* 03:00:00";
+            description = "Heure des sauvegardes (format systemd OnCalendar)";
+          };
+          pruneOpts = mkOption {
+            type        = listOf str;
+            default     = [ "--keep-daily 7" "--keep-weekly 4" "--keep-monthly 6" ];
+            description = "Rétention par défaut (`restic forget --prune`)";
+          };
+          jobs      = mkOption {
+            default     = {};
+            description = ''
+              Sauvegardes par service, remplies par les modules serveur (`nextcloud`, `kanidm`…)
+              et complétables par le host. Chaque job a son dépôt et son mot de passe restic,
+              secret sops `backup/<job>-password`.
+            '';
+            type        = attrsOf (submodule {
+              options = {
+                enable            = mkOption {
+                  type        = bool;
+                  default     = true;
+                  description = "Activer cette sauvegarde";
+                };
+                paths             = mkOption {
+                  type        = listOf str;
+                  default     = [];
+                  description = "Chemins sauvegardés";
+                };
+                postgresDatabases = mkOption {
+                  type        = listOf str;
+                  default     = [];
+                  description = "Bases PostgreSQL à dumper (pg_dump) juste avant la sauvegarde";
+                };
+                prepareCommand    = mkOption {
+                  type        = lines;
+                  default     = "";
+                  description = "Commandes lancées avant la sauvegarde (après les dumps)";
+                };
+                pruneOpts         = mkOption {
+                  type        = nullOr (listOf str);
+                  default     = null;
+                  description = "Rétention propre à ce job (défaut : `backup.pruneOpts`)";
+                };
+              };
+            });
+          };
+        };
+        proxmoxGuest  = {
+          enable      = mkEnableOption "Profil de VM invitée Proxmox (agent QEMU, pilotes virtio, SSH, bootloader)";
+          firmware    = mkOption {
+            type        = enum [ "bios" "uefi" ];
+            example     = "uefi";
+            description = ''
+              Firmware de la VM dans Proxmox : `bios` (SeaBIOS, grub) ou `uefi` (OVMF, systemd-boot).
+              Pas de valeur par défaut : un mauvais choix rend la VM non démarrable.
+            '';
+          };
+          device      = mkOption {
+            type        = str;
+            default     = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi0";
+            description = "Disque système de la VM (cible de grub en BIOS et de disko).";
+          };
+          disko       = mkEnableOption "Partitionnement du disque système par disko (installation avec nixos-anywhere)";
+          rootSshKeys = mkOption {
+            type        = listOf str;
+            default     = [];
+            example     = [ "ssh-ed25519 AAAAC3Nza... moi@poste" ];
+            description = "Clés SSH publiques autorisées pour root (installation et déploiement à distance).";
+          };
+        };
         nix = {
           autoUpgrade = mkEnableOption "Activate nix autoUpgrade at 12h-14h";
           optiStore   = mkEnableOption "Enable optimisation et garbage collecte";

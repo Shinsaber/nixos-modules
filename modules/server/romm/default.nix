@@ -2,6 +2,24 @@
 
 let
   cfg = config.shincraft.server.romm;
+  ph  = config.sops.placeholder;
+
+  # Secrets attendus dans le fichier sops du host
+  secrets = [ "romm/db-password" "romm/db-root-password" "romm/auth-secret-key" ]
+    ++ lib.optional cfg.screenscraper.enable     "romm/screenscraper-password"
+    ++ lib.optional cfg.retroachievements.enable "romm/retroachievements-api-key"
+    ++ lib.optional cfg.steamgriddb.enable       "romm/steamgriddb-api-key";
+
+  # Dump MariaDB pour les sauvegardes : le mot de passe root est lu dans l'environnement du
+  # conteneur (MARIADB_ROOT_PASSWORD), il n'apparaît sur aucune ligne de commande de l'hôte.
+  dumpDir    = "/var/backup/romm";
+  dumpScript = pkgs.writeShellScript "romm-db-dump" ''
+    set -euo pipefail
+    ${pkgs.podman}/bin/podman exec romm-db sh -c \
+      'MYSQL_PWD="$MARIADB_ROOT_PASSWORD" exec mariadb-dump -uroot --single-transaction --routines --events --databases "$MARIADB_DATABASE"' \
+      | ${pkgs.zstd}/bin/zstd -q -c > ${dumpDir}/romm.sql.zst.tmp
+    mv ${dumpDir}/romm.sql.zst.tmp ${dumpDir}/romm.sql.zst
+  '';
 in
 with lib;
 with types;
@@ -32,48 +50,20 @@ with types;
         default     = "romm-user";
         description = "Utilisateur de la base de données MariaDB";
       };
-
-      password = mkOption {
-        type        = str;
-        description = "Mot de passe de l'utilisateur de la base de données";
-      };
-
-      rootPassword = mkOption {
-        type        = str;
-        description = "Mot de passe root de MariaDB";
-      };
-    };
-
-    authSecretKey = mkOption {
-      type        = str;
-      description = "Clé secrète pour l'authentification RomM (générée avec `openssl rand -hex 32`)";
     };
 
     screenscraper = {
+      enable = mkEnableOption "Fournisseur de métadonnées ScreenScraper (secret sops `romm/screenscraper-password`)";
+
       user = mkOption {
         type        = str;
         default     = "";
         description = "Nom d'utilisateur ScreenScraper";
       };
-
-      password = mkOption {
-        type        = str;
-        default     = "";
-        description = "Mot de passe ScreenScraper";
-      };
     };
 
-    retroachievements.apiKey = mkOption {
-      type        = str;
-      default     = "";
-      description = "Clé API RetroAchievements";
-    };
-
-    steamgriddb.apiKey = mkOption {
-      type        = str;
-      default     = "";
-      description = "Clé API SteamGridDB";
-    };
+    retroachievements.enable = mkEnableOption "RetroAchievements (secret sops `romm/retroachievements-api-key`)";
+    steamgriddb.enable       = mkEnableOption "SteamGridDB (secret sops `romm/steamgriddb-api-key`)";
 
     configFile = mkOption {
       type        = package;
@@ -95,7 +85,15 @@ with types;
       systemd.tmpfiles.rules = [
         "d /var/lib/romm/redis     0755 root root -"
         "d /var/lib/romm/db        0755 root root -"
+        "d ${dumpDir}             0700 root root -"
       ];
+
+      # Sauvegarde (si shincraft.system.backup est activé) : dump de la base MariaDB.
+      # La bibliothèque et les assets (rommDataPath) ne sont pas inclus.
+      shincraft.system.backup.jobs.romm = {
+        paths          = [ dumpDir ];
+        prepareCommand = "${dumpScript}";
+      };
 
       # Networks
       systemd.services."podman-romm-network" = {
@@ -118,11 +116,10 @@ with types;
           image = "mariadb:12.3.2";
           networks  = [ "romm-network" ];
           environment = {
-            MARIADB_ROOT_PASSWORD = cfg.db.rootPassword;
             MARIADB_DATABASE      = cfg.db.name;
             MARIADB_USER          = cfg.db.user;
-            MARIADB_PASSWORD      = cfg.db.password;
           };
+          environmentFiles = [ config.sops.templates."romm-db.env".path ];
           volumes = [
             "/var/lib/romm/db:/var/lib/mysql"
           ];
@@ -136,14 +133,10 @@ with types;
             DB_HOST                   = "romm-db";
             DB_NAME                   = cfg.db.name;
             DB_USER                   = cfg.db.user;
-            DB_PASSWD                 = cfg.db.password;
-            ROMM_AUTH_SECRET_KEY      = cfg.authSecretKey;
             SCREENSCRAPER_USER        = cfg.screenscraper.user;
-            SCREENSCRAPER_PASSWORD    = cfg.screenscraper.password;
-            RETROACHIEVEMENTS_API_KEY = cfg.retroachievements.apiKey;
-            STEAMGRIDDB_API_KEY       = cfg.steamgriddb.apiKey;
             HASHEOUS_API_ENABLED      = if cfg.hasheous.enable then "true" else "false";
           };
+          environmentFiles = [ config.sops.templates."romm.env".path ];
           volumes = [
             "/var/lib/romm/redis:/redis-data"
             "${cfg.configFile}:/romm/config/config.yml"
@@ -157,6 +150,35 @@ with types;
         };
 
       };
+
+      # Secrets : fichiers d'environnement générés par sops à l'activation (hors /nix/store).
+      # MariaDB ne lit ses mots de passe qu'à la création de la base.
+      sops.secrets = genAttrs secrets (_: {});
+
+      sops.templates."romm-db.env" = {
+        content = ''
+          MARIADB_ROOT_PASSWORD=${ph."romm/db-root-password"}
+          MARIADB_PASSWORD=${ph."romm/db-password"}
+        '';
+        restartUnits = [ "podman-romm-db.service" ];
+      };
+
+      sops.templates."romm.env" = {
+        content = concatStringsSep "\n" ([
+          "DB_PASSWD=${ph."romm/db-password"}"
+          "ROMM_AUTH_SECRET_KEY=${ph."romm/auth-secret-key"}"
+        ]
+        ++ optional cfg.screenscraper.enable     "SCREENSCRAPER_PASSWORD=${ph."romm/screenscraper-password"}"
+        ++ optional cfg.retroachievements.enable "RETROACHIEVEMENTS_API_KEY=${ph."romm/retroachievements-api-key"}"
+        ++ optional cfg.steamgriddb.enable       "STEAMGRIDDB_API_KEY=${ph."romm/steamgriddb-api-key"}"
+        ) + "\n";
+        restartUnits = [ "podman-romm.service" ];
+      };
+
+      assertions = [{
+        assertion = config.shincraft.system.sops.enable;
+        message   = "shincraft.server.romm : les secrets passent par sops, activer shincraft.system.sops.";
+      }];
     })
   ];
 } 

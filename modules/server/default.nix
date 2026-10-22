@@ -5,7 +5,8 @@
     ./jellyfin
     ./nextcloud
     ./nginx
-    ./auth
     ./romm
+    ./kanidm
+    ./onlyoffice
   ];
 }
