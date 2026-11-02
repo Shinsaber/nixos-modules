@@ -44,13 +44,15 @@ au lieu de sops.
 | `server.onlyoffice`     | `onlyoffice/jwt-secret`          | sans `jwtSecretFile` (même valeur côté Nextcloud) |
 | `server.nextcloud.onlyoffice` | `onlyoffice/jwt-secret`  | `onlyoffice.enable`                              |
 | `system.backup`         | `backup/s3-secret`               | `backup.enable`, s'il y a au moins un job       |
-|                         | `backup/<job>-password`          | pour chaque job (`nextcloud`, `kanidm`, `romm`…) |
+|                         | `backup/<job>-password`          | pour chaque job (`nextcloud`, `kanidm`, `romm`, `collectionnard`…) |
+| `users.<nom>`           | `users/<nom>-password`           | `user-config.sopsPassword` (hash `mkpasswd -m yescrypt`) |
 | `server.romm`           | `romm/db-password`               | toujours                                         |
 |                         | `romm/db-root-password`          | toujours                                         |
 |                         | `romm/auth-secret-key`           | toujours (`openssl rand -hex 32`)                |
 |                         | `romm/screenscraper-password`    | `screenscraper.enable`                           |
 |                         | `romm/retroachievements-api-key` | `retroachievements.enable`                       |
 |                         | `romm/steamgriddb-api-key`       | `steamgriddb.enable`                             |
+| `server.collectionnard` | `collectionnard/jwt-secret`      | sans `jwtSecretFile` (`openssl rand -base64 48`) |
 
 Un fichier de secrets prend la forme d'un YAML imbriqué (la clé `nextcloud/s3-secret`
 correspond à `nextcloud:` → `s3-secret:`) :

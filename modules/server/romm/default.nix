@@ -32,6 +32,14 @@ with types;
       description = "Port d'écoute du service RomM";
     };
 
+    # Traçabilité uniquement : le port publié par podman (DNAT puis FORWARD) contourne le
+    # pare-feu NixOS (chaîne INPUT), il est donc joignable même à false.
+    openFirewall = mkOption {
+      type        = bool;
+      default     = true;
+      description = "Déclarer le port de RomM dans networking.firewall (traçabilité : podman le publie de toute façon)";
+    };
+
     rommDataPath = mkOption {
       type        = str;
       example     = "/data/romm/library";
@@ -81,6 +89,8 @@ with types;
   config = mkMerge [
     (mkIf cfg.enable {
 
+      networking.firewall.allowedTCPPorts = optional cfg.openFirewall cfg.port;
+
       # Création des répertoires nécessaires
       systemd.tmpfiles.rules = [
         "d /var/lib/romm/redis     0755 root root -"
@@ -113,7 +123,7 @@ with types;
       virtualisation.oci-containers.containers = {
 
         romm-db = {
-          image = "mariadb:12.3.2";
+          image = "mariadb:13.0.2";
           networks  = [ "romm-network" ];
           environment = {
             MARIADB_DATABASE      = cfg.db.name;
@@ -123,10 +133,13 @@ with types;
           volumes = [
             "/var/lib/romm/db:/var/lib/mysql"
           ];
+          # podman stop tue le conteneur après 10 s par défaut : laisser à MariaDB le temps
+          # de s'arrêter proprement (sinon tc.log corrompu au redémarrage). < TimeoutStopSec (120 s).
+          extraOptions = [ "--stop-timeout=90" ];
         };
 
         romm = {
-          image = "rommapp/romm:5.0.0";
+          image = "rommapp/romm:5.4.1";
           dependsOn = [ "romm-db" ];
           networks  = [ "romm-network" ];
           environment = {

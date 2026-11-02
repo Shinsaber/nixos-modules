@@ -16,8 +16,11 @@ stdenvNoCC.mkDerivation rec {
   dontUnpack    = true;
   dontBuild     = true;
 
+  # Ajoute à la fin du plugin l'envoi des notifications vers le terminal client (SSH)
   installPhase = ''
-    install -Dm0444 $src/auto-notify.plugin.zsh --target-directory=$out/share/zsh/plugins/auto-notify
+    mkdir -p $out/share/zsh/plugins/auto-notify
+    cat $src/auto-notify.plugin.zsh ${./auto-notify-terminal.zsh} > $out/share/zsh/plugins/auto-notify/auto-notify.plugin.zsh
+    chmod 0444 $out/share/zsh/plugins/auto-notify/auto-notify.plugin.zsh
   '';
 
   meta = with lib; {

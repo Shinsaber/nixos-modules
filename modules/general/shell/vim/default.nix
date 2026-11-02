@@ -27,7 +27,6 @@ with lib;
               # The NERDTree is a file system explorer for the Vim editor.
               nerdtree
               nerdtree-git-plugin
-              vim-buffergator # Buffergator is a plugin for listing, navigating between, and selecting buffers to edit
               tagbar # Tagbar is a Vim plugin that provides an easy way to browse the tags of the current file and get an overview of its structure.
               # Lean & mean status/tabline for vim that's light as air.
               vim-airline

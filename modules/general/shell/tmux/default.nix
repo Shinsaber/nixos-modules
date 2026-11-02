@@ -23,6 +23,7 @@ with lib;
                " #{l:#[fg=#{@catppuccin_kube_context_color}]#{kubectx_context}#[fg=default]:#[fg=#{@catppuccin_kube_namespace_color}]#{kubectx_namespace}}"
             run-shell ${tmuxPlugins.catppuccin}/share/tmux-plugins/catppuccin/catppuccin.tmux
           ''
+          (optionalString (cfg.weatherCity != null) "set-option -g @tmux-weather-location \"${cfg.weatherCity}\"\n")
           catppuccin_conf
           ''
             #run-shell ${tmuxPlugins.cpu}/share/tmux-plugins/cpu/cpu.tmux

@@ -83,6 +83,8 @@ with types;
         };
       };
       environment.etc.zshrc.text = ''
+        ${optionalString (config.shincraft.shell.weatherCity != null)
+          "export CITY=${escapeShellArg config.shincraft.shell.weatherCity}"}
         source ${./zshrc.sh}
         source ${./fzf.sh}
       '';
@@ -100,7 +102,7 @@ with types;
       '';
     })
 
-    (mkIf config.shincraft.shell.tmux.enable {
+    (mkIf cfg.enable {
       programs.zsh.promptInit = ''
         source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
       '';

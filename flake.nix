@@ -7,8 +7,7 @@
     home-manager.url = "github:nix-community/home-manager/release-26.05";
     nixvim = {
       url = "github:nix-community/nixvim/nixos-26.05";
-      # If using a stable channel you can use `url = "github:nix-community/nixvim/nixos-<version>"`
-      #inputs.nixpkgs.follows = "nixos";
+      inputs.nixpkgs.follows = "nixos";
     };
     disko = {
       url = "github:nix-community/disko/latest";
@@ -22,19 +21,22 @@
 
   outputs = { self, nixos, nix-unstable, home-manager, nixvim, disko, sops-nix, ... }:
     let
-      system = "x86_64-linux";
-      nixvim' = nixvim.legacyPackages.${system};
-      nvim = nixvim'.makeNixvimWithModule {
-        pkgs = import nixos { inherit system; config.allowUnfree = true; };
-        module = import ./packages/nvim;
+      systems       = [ "x86_64-linux" "aarch64-linux" ];
+      forAllSystems = nixos.lib.genAttrs systems;
+
+      # Neovim (nixvim) et nixpkgs unstable pour une architecture donnée
+      mkNixvim = system: nixvim.legacyPackages.${system}.makeNixvimWithModule {
+        pkgs            = import nixos { inherit system; config.allowUnfree = true; };
+        module          = import ./packages/nvim;
         extraSpecialArgs = self;
       };
-      pkgsUnstable = import nix-unstable { inherit system; config.allowUnfree = true; };
+      mkUnstable = system: import nix-unstable { inherit system; config.allowUnfree = true; };
     in
     {
-      nixos = nixos;
+      nixos    = nixos;
       unstable = nix-unstable;
-      packages.${system}.nixvim = nvim;
+      packages = forAllSystems (system: { nixvim = mkNixvim system; });
+      checks   = forAllSystems (system: import ./tests { inherit self nixos system; });
       nixosModules = {
         general = {
           imports = [
@@ -43,8 +45,13 @@
             home-manager.nixosModules.home-manager
             disko.nixosModules.disko
             sops-nix.nixosModules.sops
-            { _module.args.packages = { nixvim = nvim; }; }
-            { _module.args.unstable = pkgsUnstable; }
+            # Arguments de module calculés pour l'architecture du host, pas celle du poste
+            ({ pkgs, ... }:
+              let system = pkgs.stdenv.hostPlatform.system;
+              in {
+                _module.args.packages = { nixvim = mkNixvim system; };
+                _module.args.unstable = mkUnstable system;
+              })
           ];
         };
         server = {

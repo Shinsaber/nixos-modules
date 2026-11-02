@@ -2,7 +2,7 @@
 name: verifier
 description: Évalue les configurations NixOS du dépôt privé des hosts avec la copie locale de ces modules pour valider une modification. À utiliser après toute modification d'un fichier .nix.
 argument-hint: "[host…|all]"
-allowed-tools: Bash(nix eval:*), Bash(nix flake show:*), Bash(git diff:*), Bash(git status:*)
+allowed-tools: Bash(nix eval:*), Bash(nix flake check:*), Bash(nix flake show:*), Bash(git diff:*), Bash(git status:*), Bash(git add:*)
 ---
 
 # Vérifier les modules sur les hosts
@@ -16,6 +16,11 @@ Ne recopie aucune de ces informations dans un fichier suivi par git.
 
 ## Étapes
 
+0. **Tests du dépôt** : dans ce dépôt, `nix flake check` (les fichiers nouveaux doivent être
+   suivis par git : `git add -N <fichier>` suffit). En cas d'échec d'un cas, relancer
+   `nix eval .#checks.x86_64-linux.<cas> --show-trace`. Si la modification ajoute, renomme ou
+   retire une option, mettre à jour `tests/workstation.nix` ou `tests/server.nix` (activation +
+   vérification) avant de passer aux hosts.
 1. **Lister les hosts** (ne pas se fier à une liste figée) :
    ```sh
    cd <DEPOT_HOSTS> && nix eval --no-write-lock-file \

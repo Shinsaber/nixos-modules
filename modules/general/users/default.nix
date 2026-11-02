@@ -56,13 +56,34 @@ in
     mapUsers = f: attrsets.mapAttrs f config.shincraft.users;
   in
   {
-    users.users = mapUsers ( name: cfg: if name != "root" then {
-      isNormalUser = true;
-      uid          = cfg.user-config.uid;
-      group        = "users";
-      extraGroups  = cfg.user-config.extraGroups;
-      useDefaultShell = true;
-    } else {});
+    users.users = mapUsers ( name: cfg:
+      let
+        uc = cfg.user-config;
+        passwordFile =
+          if uc.hashedPasswordFile != null then uc.hashedPasswordFile
+          else if uc.sopsPassword then config.sops.secrets."users/${name}-password".path
+          else null;
+      in {
+        hashedPasswordFile          = mkIf (passwordFile != null) passwordFile;
+        openssh.authorizedKeys.keys = uc.openssh.authorizedKeys;
+      } // optionalAttrs (name != "root") {
+        isNormalUser = true;
+        uid          = uc.uid;
+        group        = "users";
+        extraGroups  = uc.extraGroups;
+        useDefaultShell = true;
+      });
+
+    # Mots de passe depuis sops : déchiffrés avant la création des utilisateurs
+    sops.secrets = mapAttrs' (name: _: nameValuePair "users/${name}-password" { neededForUsers = true; })
+      (filterAttrs (_: cfg: cfg.user-config.sopsPassword && cfg.user-config.hashedPasswordFile == null)
+        config.shincraft.users);
+
+    assertions = [{
+      assertion = all (cfg: cfg.user-config.sopsPassword -> config.shincraft.system.sops.enable)
+        (attrValues config.shincraft.users);
+      message   = "shincraft.users.<nom>.user-config.sopsPassword : activer shincraft.system.sops.";
+    }];
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;
@@ -118,7 +139,6 @@ in
         (mkIf cfg.home-config.nodejs.enable [
           nodejs
           yarn
-          yarn2nix
         ])
         (mkIf config.shincraft.tools.virtualisation.docker [ 
           dive

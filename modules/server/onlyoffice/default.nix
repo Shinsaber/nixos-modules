@@ -56,6 +56,9 @@ in
       jwtSecretFile         = jwtSecretFile;
       securityNonceFile     = nonceFile;
       allowLocalConnections = cfg.allowLocalConnections;
+      # RabbitMQ n'écoute que sur 127.0.0.1, mais Node.js résout `localhost` (défaut nixpkgs)
+      # en ::1 d'abord : ECONNREFUSED ::1:5672
+      rabbitmqUrl           = mkDefault "amqp://guest:guest@127.0.0.1:5672";
     };
 
     sops.secrets = mkIf (sops && cfg.jwtSecretFile == null) {
@@ -69,6 +72,30 @@ in
       assertion = cfg.jwtSecretFile == null -> sops;
       message   = "shincraft.server.onlyoffice : définir jwtSecretFile ou activer shincraft.system.sops.";
     }];
+
+    # Derrière le reverse proxy HTTPS, le vhost local est en HTTP : nixpkgs y force
+    # `X-Forwarded-Proto $scheme` (= http) et le Document Server génère alors des liens http://
+    # (« Blocked loading mixed active content »). Comme le http-common.conf officiel, on reprend
+    # le protocole transmis par le proxy. Copie de l'extraConfig de nixpkgs, seule cette ligne change.
+    services.nginx.appendHttpConfig = ''
+      map $http_x_forwarded_proto $onlyoffice_scheme {
+        default $http_x_forwarded_proto;
+        ""      $scheme;
+      }
+    '';
+    services.nginx.virtualHosts.${cfg.hostName}.extraConfig =
+      let version = config.services.onlyoffice.package.version; in mkForce ''
+        rewrite ^/$ /welcome/ redirect;
+        rewrite ^\/OfficeWeb(\/apps\/.*)$ /${version}/web-apps$1 redirect;
+        rewrite ^(\/web-apps\/apps\/(?!api\/).*)$ /${version}$1 redirect;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Proto $onlyoffice_scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+      '';
 
     networking.firewall.allowedTCPPorts = mkIf cfg.openFirewall [ 80 ];
 

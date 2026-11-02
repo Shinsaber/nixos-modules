@@ -27,7 +27,7 @@ let
             };
           };
         };
-        vscode.enable   = mkEnableOption "Enable VSCodium";
+        vscode.enable   = mkEnableOption "Enable VS Code (pkgs.vscode from nixpkgs unstable) with its extensions";
         chromium.enable = mkEnableOption "Enable Chromium Browser";
         kube.enable     = mkEnableOption "Install tools for managing kube cluster";
         nodejs.enable   = mkEnableOption "Install yarn";
@@ -63,7 +63,20 @@ let
           example     = [ "wheel" "disk" ];
           description = "Groupes supplémentaires de l'utilisateur";
         };
-      };  
+        hashedPasswordFile = mkOption {
+          default     = null;
+          type        = nullOr str;
+          example     = "/var/lib/secrets/moi-password";
+          description = "Fichier contenant le mot de passe haché (`mkpasswd -m yescrypt`), lu à l'activation";
+        };
+        sopsPassword = mkEnableOption "mot de passe haché lu dans le secret sops `users/<nom>-password` (nécessite shincraft.system.sops)";
+        openssh.authorizedKeys = mkOption {
+          default     = [];
+          type        = listOf str;
+          example     = [ "ssh-ed25519 AAAAC3Nza... moi@poste" ];
+          description = "Clés SSH publiques autorisées pour cet utilisateur";
+        };
+      };
     };
   };
 in
@@ -74,6 +87,9 @@ in
     ./shell
     ./tools
     ./users
+    (mkRemovedOptionModule [ "shincraft" "system" "batterysave" ] "Retirée : déclarer les cibles ac/battery dans le host si besoin.")
+    (mkRemovedOptionModule [ "shincraft" "system" "nix" "autoUpgrade" ] "Retirée : déployer depuis le poste (docs/proxmox.md).")
+    (mkRemovedOptionModule [ "shincraft" "system" "nix" "optiStore" ] "Retirée : configurer nix.gc et nix.optimise dans le host.")
   ];
 
   options = {
@@ -97,8 +113,25 @@ in
         type    = attrsOf ( submodule userModule );
       };
       gui = {
-        enable = mkEnableOption "Enable Plasma gui";
-        audio.pipewire.enable = mkEnableOption "Enable pipewire instead of pulseaudio";
+        enable = mkEnableOption "Enable GUI environment (fonts, keyboard, bluetooth, printing, basic tools)";
+        keyboard = {
+          layout  = mkOption {
+            type        = str;
+            default     = "fr";
+            description = "Disposition clavier XKB (`services.xserver.xkb.layout`, reprise en console)";
+          };
+          variant = mkOption {
+            type        = str;
+            default     = "bepo";
+            example     = "";
+            description = "Variante XKB (`services.xserver.xkb.variant`)";
+          };
+        };
+        audio.pipewire.enable = mkOption {
+          type        = bool;
+          default     = true;
+          description = "Serveur audio PipeWire (ALSA, PulseAudio, WirePlumber). `false` : aucun serveur audio configuré.";
+        };
         plasma = {
           enable     = mkEnableOption "Enable Plasma wayland gui";
           kdeconnect = mkEnableOption "Enable KDE connect <3";
@@ -113,9 +146,16 @@ in
         };
       };
       system = {
-        kanata        = mkEnableOption "Enable kanata service";
-        vaapi         = mkEnableOption "Hardware Accelerators";
-        batterysave   = mkEnableOption "Activate systemd disable service on battery";
+        kanata        = {
+          enable  = mkEnableOption "kanata keyboard remapping (space + jkl; = arrows)";
+          devices = mkOption {
+            type        = listOf str;
+            default     = [];
+            example     = [ "/dev/input/by-path/platform-i8042-serio-0-event-kbd" ];
+            description = "Claviers pris en charge par kanata (`ls /dev/input/by-path/`). Liste vide : kanata détecte tous les claviers.";
+          };
+        };
+        vaapi         = mkEnableOption "Hardware Accelerators (Intel VA-API)";
         sops          = {
           enable          = mkEnableOption "Secrets chiffrés avec sops-nix (déchiffrés par la clé SSH host)";
           defaultSopsFile = mkOption {
@@ -220,15 +260,17 @@ in
             description = "Clés SSH publiques autorisées pour root (installation et déploiement à distance).";
           };
         };
-        nix = {
-          autoUpgrade = mkEnableOption "Activate nix autoUpgrade at 12h-14h";
-          optiStore   = mkEnableOption "Enable optimisation et garbage collecte";
-        };
       };
       shell = {
-        vim.enable    = mkEnableOption "Activate Vim advenced config";
-        nixvim.enable = mkEnableOption "Activate NeoVim advenced config";
-        tmux.enable   = mkEnableOption "Activate tmux advenced config";
+        vim.enable    = mkEnableOption "Activate Vim advanced config";
+        nixvim.enable = mkEnableOption "Activate NeoVim advanced config";
+        tmux.enable   = mkEnableOption "Activate tmux advanced config";
+        weatherCity   = mkOption {
+          type        = nullOr str;
+          default     = null;
+          example     = "Paris";
+          description = "Ville de la météo (barre tmux, variable `CITY` dans zsh). `null` : détection automatique par tmux-weather.";
+        };
         zsh = {
           enable = mkEnableOption "Activate ZSH as default shell";
           powerlevel10k = {

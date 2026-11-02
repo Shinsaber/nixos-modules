@@ -1,6 +1,9 @@
-# Fichier de configuration NixOS
+# Modules NixOS shincraft
 
-Ressortir ma configuration pour mes postes et serveurs dans des modules standardisés. Avec des options pour les utilisés.
+Flake de modules NixOS réutilisables pour mes postes de travail et mes serveurs, exposés sous
+l'espace d'options `shincraft.*`. Il ne contient aucune machine : les hosts vivent dans un dépôt
+séparé qui importe `nixosModules.general` (postes et serveurs) et, pour les serveurs,
+`nixosModules.server` en plus. Versions : NixOS 26.05, home-manager 26.05, nixvim 26.05.
 
 ## Les options de config
 
@@ -9,9 +12,10 @@ Ressortir ma configuration pour mes postes et serveurs dans des modules standard
 ```
 config.shincraft
 ├──system
-│  ├──kanata        = Activate kanata keyboard remapping (space + jkl; = arrows)
-│  ├──vaapi         = Hardware Accelerators (Intel VAAPI)
-│  ├──batterysave   = Activate systemd disable service on battery
+│  ├──kanata
+│  │  ├──enable  = Activate kanata keyboard remapping (space + jkl; = arrows)
+│  │  └──devices = Claviers pris en charge (défaut : tous)
+│  ├──vaapi         = Hardware Accelerators (Intel VA-API)
 │  ├──sops
 │  │  ├──enable          = Secrets chiffrés avec sops-nix (clé SSH host)
 │  │  └──defaultSopsFile = Fichier sops du host (voir docs/secrets.md)
@@ -23,31 +27,31 @@ config.shincraft
 │  │  ├──key       = Access key ID (secret sops backup/s3-secret)
 │  │  ├──startAt   = Heure des sauvegardes (défaut : 03:00)
 │  │  ├──pruneOpts = Rétention (défaut : 7 jours, 4 semaines, 6 mois)
-│  │  └──jobs."<job>" = Remplis par les modules (nextcloud, kanidm, romm) : paths, postgresDatabases, prepareCommand, pruneOpts, enable
-│  ├──proxmoxGuest
-│  │  ├──enable      = Profil de VM invitée Proxmox (agent QEMU, virtio, SSH, bootloader)
-│  │  ├──firmware    = "bios" (grub) ou "uefi" (systemd-boot), obligatoire
-│  │  ├──device      = Disque système (défaut : scsi0)
-│  │  ├──disko       = Partitionne le disque système avec disko (nixos-anywhere)
-│  │  └──rootSshKeys = Clés SSH publiques autorisées pour root
-│  └──nix
-│     ├──autoUpgrade = Activate nix autoUpgrade at 12h-14h
-│     └──optiStore   = Enable optimisation et garbage collecte
+│  │  └──jobs."<job>" = Remplis par les modules (nextcloud, kanidm, romm, collectionnard) : paths, postgresDatabases, prepareCommand, pruneOpts, enable
+│  └──proxmoxGuest
+│     ├──enable      = Profil de VM invitée Proxmox (agent QEMU, virtio, SSH, bootloader)
+│     ├──firmware    = "bios" (grub) ou "uefi" (systemd-boot), obligatoire
+│     ├──device      = Disque système (défaut : scsi0)
+│     ├──disko       = Partitionne le disque système avec disko (nixos-anywhere)
+│     └──rootSshKeys = Clés SSH publiques autorisées pour root
 ├──tools
-│  ├──hack.enable    = Activate hacking tools set (wireshark, nmap, dig, glances)
+│  ├──hack.enable    = Activate hacking tools set (wireshark, nmap, dig, sslscan, testssl, glances)
 │  ├──ia.llama       = Activate IA llama tools set (ollama + nextjs-ui)
 │  ├──java7
 │  │  ├──enable       = Enable OpenJDK 7 for legacy applications
 │  │  └──setAsDefault = Set Java 7 as default system Java (not recommended)
 │  └──virtualisation
-│     ├──docker      = Activate Docker virtualisation
-│     ├──libvirt     = Activate Libvirt virtualisation (qemu with UEFI/TPM support)
-│     └──virtualbox  = Activate VirtualBox virtualisation
+│     ├──docker      = Activate Docker virtualisation (daemon système + mode rootless ; dive pour les utilisateurs)
+│     ├──libvirt     = Activate Libvirt virtualisation (qemu_kvm, swtpm ; virt-manager et quickemu si gui.enable)
+│     └──virtualbox  = Activate VirtualBox virtualisation (+ vagrant)
 ├──users
 │  └──[MyUser]
 │     ├──user-config
-│     │  ├──uid         = Set UID (default: 1000)
-│     │  └──extraGroups = Set other groups for the user
+│     │  ├──uid         = Set UID (default: 1000 ; à renseigner dès le deuxième utilisateur)
+│     │  ├──extraGroups = Set other groups for the user
+│     │  ├──hashedPasswordFile     = Fichier du mot de passe haché (mkpasswd -m yescrypt)
+│     │  ├──sopsPassword           = Mot de passe haché depuis le secret sops users/<nom>-password
+│     │  └──openssh.authorizedKeys = Clés SSH publiques autorisées
 │     └──home-config
 │        ├──packages      = List of package to install only for this user
 │        ├──git
@@ -58,60 +62,76 @@ config.shincraft
 │        ├──ssh
 │        │  ├──enable       = Activate user config for ssh
 │        │  └──listAlias    = Add alias for SSH client (see below)
-│        ├──vscode.enable   = Enable VSCodium and addon
+│        ├──vscode.enable   = Install VS Code (pkgs.vscode de nixpkgs unstable) et ses extensions
 │        ├──chromium.enable = Enable Chromium Browser
-│        ├──kube.enable     = Install tools for managing kube cluster
+│        ├──kube.enable     = Install tools for managing kube cluster (kubectl, kubectx, helm, helmfile, stern, terraform, azure-cli… ; freelens et jet-pilot si gui.enable)
 │        ├──nodejs.enable   = Install yarn and Node tools
-│        ├──java.enable     = Install Java tools
-│        └──database.enable = Install database tools (DBeaver)
+│        ├──java.enable     = Install Java tools (programs.java + sbt)
+│        └──database.enable = Install database tools (DBeaver, si gui.enable)
 ├──shell
-│  ├──vim.enable    = Activate Vim advenced config
-│  ├──nixvim.enable = Activate NeoVim advenced config (nixvim)
-│  ├──tmux.enable   = Activate tmux advenced config
+│  ├──vim.enable    = Activate Vim advanced config (EDITOR=vim)
+│  ├──nixvim.enable = Activate NeoVim advanced config (nixvim ; EDITOR=nvim, alias vim=nvim)
+│  ├──tmux.enable   = Activate tmux advanced config (catppuccin, menu, kubectx, météo)
+│  ├──weatherCity   = Ville de la météo tmux et variable CITY de zsh (défaut : détection automatique)
 │  └──zsh
 │     ├──enable  = Activate ZSH as default shell
 │     └──powerlevel10k
 │        ├──enable             = Setup powerlevel10k for ZSH
 │        └──setupInstantPrompt = Setup instant prompt, might crash zsh
 └──gui
-   ├──enable = Enable GUI environment (fonts, basic tools)
+   ├──enable = Enable GUI environment (polices, Bluetooth, impression, Firefox, outils de base)
+   ├──keyboard
+   │  ├──layout  = Disposition XKB (défaut : fr)
+   │  └──variant = Variante XKB (défaut : bepo)
    ├──plasma
    │  ├──enable     = Enable Plasma 6 wayland gui
    │  └──kdeconnect = Enable KDE connect
    ├──audio
    │  └──pipewire
-   │     └──enable = Enable pipewire instead of pulseaudio
+   │     └──enable = Serveur audio PipeWire (défaut : true ; false = aucun serveur audio)
    └──pkgs
-      ├──game.enable    = Enable gui game packages (Steam, Discord, Wesnoth)
-      ├──art.enable     = Enable gui art packages (Krita, GIMP, Darktable, Inkscape)
+      ├──game.enable    = Enable gui game packages (Steam, Discord, Wesnoth, appimage-run)
+      ├──art.enable     = Enable gui art packages (Krita, GIMP, Darktable, Inkscape, pilote XP-Pen)
       ├──"3d".enable    = Enable gui 3D packages (FreeCAD)
       ├──audio.enable   = Enable gui audio packages (Audacity, Picard)
-      ├──video.enable   = Enable gui video packages (OBS, OpenShot, Shotcut, FFmpeg)
-      └──android.enable = Enable android packages (ADB, Waydroid)
+      ├──video.enable   = Enable gui video packages (OBS, Shotcut, Kodi, MakeMKV, MKVToolNix, Aegisub, FFmpeg, DaVinci Resolve)
+      └──android.enable = Enable android packages (adb-sync, Waydroid)
 ```
 
 ### Modules serveur (`config.shincraft.server`)
+
+`nixosModules.server` s'importe toujours avec `nixosModules.general` : les modules serveur
+s'appuient sur `shincraft.system.sops` (secrets) et `shincraft.system.backup` (sauvegardes).
 
 ```
 config.shincraft.server
 ├──nginx
 │  ├──enable = Install nginx with SSL/TLS configuration
 │  ├──mail   = Email for ACME/Let's Encrypt certificates
-│  └──domain."<domaine>"."<sous-domaine>"
-│     ├──host        = Backend host (default: www)
-│     ├──port        = Backend port (default: 80)
-│     ├──protocol    = Backend protocol: http (default) or https
-│     ├──maxBodySize = client_max_body_size (ex. "16G")
-│     └──allowFrom   = Allowed networks, others get 403 (ex. VPN)
-├──jellyfin   = Install Jellyfin media server (+ Seerr) with hardware acceleration
-├──jellyseerr = (déclarée mais sans effet : Seerr est installé avec jellyfin)
+│  ├──domain."<domaine>"."<sous-domaine>"
+│  │  ├──host        = Backend host (default: www)
+│  │  ├──port        = Backend port (default: 80)
+│  │  ├──protocol    = Backend protocol: http (default) or https
+│  │  ├──maxBodySize = client_max_body_size (ex. "16G")
+│  │  └──allowFrom   = Allowed networks, others get 403 (ex. VPN)
+│  ├──jsonLog = Journal d'accès JSON en plus (/var/log/nginx/access.json.log, défaut : true)
+│  └──fail2ban
+│     ├──enable      = Bannir les clients qui scannent nginx (4xx en rafale, chemins sensibles .env/.git/wp-…) + prison sshd
+│     ├──ignoreIP    = Réseaux jamais bannis (ex. LAN, VPN)
+│     ├──maxRetry    = Réponses 4xx tolérées par client en 10 min (défaut : 20)
+│     ├──ignorePaths = Chemins ignorés par nginx-scan et nginx-sensitive (défaut : WebDAV Nextcloud)
+│     └──bantime     = Premier bannissement (défaut : "1h", double à chaque récidive)
+├──jellyfin
+│  ├──enable       = Install Jellyfin media server (+ Seerr), active system.vaapi par défaut
+│  └──openFirewall = Ouvrir les ports de Jellyfin et Seerr (défaut : false, passer par nginx)
 ├──transmission
-│  ├──enable    = Install transmission torrent client
-│  └──whitelist = IP whitelist for web interface
+│  ├──enable       = Install transmission 4 (RPC sur 0.0.0.0) + interface web Flood
+│  ├──openFirewall = Ouvrir les ports RPC, pairs et Flood (défaut : false)
+│  └──whitelist    = IP autorisées sur le RPC de transmission (rpc-whitelist)
 ├──nextcloud
 │  ├──enable         = Install Nextcloud (PostgreSQL + Redis)
 │  ├──hostName       = Domain name used to reach Nextcloud
-│  ├──package        = Nextcloud package (default: nextcloud33)
+│  ├──package        = Nextcloud package (default: nextcloud34)
 │  ├──https          = Enable HTTPS (default: true)
 │  ├──admin
 │  │  ├──user         = Admin created at install (default: none, use nextcloud-occ)
@@ -136,7 +156,8 @@ config.shincraft.server
 │  │  ├──clientId         = OIDC client ID (default: nextcloud)
 │  │  ├──discoveryUri     = OpenID discovery URL
 │  │  ├──clientSecretFile = Client secret file (default: sops oidc/<clientId>)
-│  │  └──mappingUid       = Claim used as user ID (default: preferred_username)
+│  │  ├──mappingUid       = Claim used as user ID (default: preferred_username)
+│  │  └──ssoOnly          = SSO login only, password form hidden (default: false)
 │  ├──onlyoffice
 │  │  ├──enable            = Edit documents with ONLYOFFICE (sops onlyoffice/jwt-secret)
 │  │  └──documentServerUrl = Public URL of the Document Server
@@ -163,21 +184,36 @@ config.shincraft.server
 │  ├──openFirewall          = Open port 80 for the reverse proxy
 │  ├──jwtSecretFile         = JWT secret shared with Nextcloud (default: sops onlyoffice/jwt-secret)
 │  └──allowLocalConnections = Allow downloads from private IPs (internal DNS, VPN)
-└──romm
-   ├──enable        = Install RomM (ROM Manager) with MariaDB (Podman containers)
-   ├──port          = Listening port (default: 8095)
-   ├──rommDataPath  = Path of the ROM library (resources/, library/, assets/)
-   ├──db
-   │  ├──name = MariaDB database name (default: romm)
-   │  └──user = MariaDB user (default: romm-user)
-   ├──screenscraper
-   │  ├──enable = Enable ScreenScraper (sops romm/screenscraper-password)
-   │  └──user   = ScreenScraper user
-   ├──retroachievements.enable = Enable RetroAchievements (sops romm/retroachievements-api-key)
-   ├──steamgriddb.enable       = Enable SteamGridDB (sops romm/steamgriddb-api-key)
-   ├──hasheous.enable          = Enable Hasheous metadata provider (default: true)
-   └──configFile               = RomM config.yml (default: ./modules/server/romm/config.yml)
+├──romm
+│  ├──enable        = Install RomM (ROM Manager) with MariaDB (Podman containers)
+│  ├──port          = Listening port (default: 8095)
+│  ├──openFirewall  = Declare the port in networking.firewall, for traceability only: podman bypasses the firewall (default: true)
+│  ├──rommDataPath  = Path of the ROM library (resources/, library/, assets/)
+│  ├──db
+│  │  ├──name = MariaDB database name (default: romm)
+│  │  └──user = MariaDB user (default: romm-user)
+│  ├──screenscraper
+│  │  ├──enable = Enable ScreenScraper (sops romm/screenscraper-password)
+│  │  └──user   = ScreenScraper user
+│  ├──retroachievements.enable = Enable RetroAchievements (sops romm/retroachievements-api-key)
+│  ├──steamgriddb.enable       = Enable SteamGridDB (sops romm/steamgriddb-api-key)
+│  ├──hasheous.enable          = Enable Hasheous metadata provider (default: true)
+│  └──configFile               = RomM config.yml (default: ./modules/server/romm/config.yml)
+└──collectionnard
+   ├──enable         = Install Collectionnard, built from a release (hardened systemd service + PostgreSQL)
+   ├──hostName       = Domain of the local nginx vhost (HTTP, TLS on the reverse proxy)
+   ├──package        = Server package (default: ./modules/server/collectionnard/package.nix)
+   ├──webPackage     = Front-end package (same file)
+   ├──port           = Local API port, never opened (default: 8085)
+   ├──openFirewall   = Open port 80 for the reverse proxy
+   ├──trustedProxies = Reverse proxies trusted for X-Real-IP
+   ├──jwtSecretFile  = JWT signing key file (default: sops collectionnard/jwt-secret)
+   └──settings       = Extra server environment (MEMBER_INVITES, EXTERNAL_USER_AGENT…)
 ```
+
+Collectionnard : version et hashes dans `package.nix` ; administration avec la commande
+`colec-server` (lancée sous l'utilisateur du service), ex. `colec-server create-user <nom> <email> --admin`
+puis `colec-server install-domain --all`.
 
 > Les secrets (RomM, Kanidm, S3 et OIDC de Nextcloud) passent par sops-nix
 > (`shincraft.system.sops`) : noms attendus et mise en place dans [docs/secrets.md](docs/secrets.md).
@@ -191,6 +227,17 @@ config.boot.plymouth
 ├──name        = Name displayed on the splash (default: NixOS)
 ├──colorNormal = Color(r, g, b) (default: Color(0.2400, 0.3500, 0.5900))
 └──colorTinted = Color(r, g, b) (default: Color(0.3600, 0.5200, 0.6700))
+```
+
+Le module ajoute à l'overlay le paquet `pkgs.splash-boot` (thème `vortex` avec le logo et les
+couleurs ci-dessus) mais ne l'active pas : c'est le host qui le branche.
+
+```nix
+boot.plymouth = {
+  enable        = true;
+  theme         = "vortex";
+  themePackages = lib.mkForce [ pkgs.splash-boot ];
+};
 ```
 
 ### Alias SSH (`home-config.ssh.listAlias`)
@@ -213,6 +260,17 @@ ssh = {
   };
 };
 ```
+
+## Tests
+
+```sh
+nix flake check
+```
+
+Deux configurations synthétiques dans [tests/](tests/) (poste de travail, serveur) activent les
+options et vérifient le résultat de l'évaluation : firewall fermé par défaut, secrets sops déclarés,
+jobs de sauvegarde, reverse proxy… Rien n'est construit. Toute option ajoutée ou modifiée doit y
+être couverte.
 
 ## Packages personnalisés
 
@@ -293,7 +351,7 @@ voir [docs/kanidm.md](docs/kanidm.md). Secrets : [docs/secrets.md](docs/secrets.
     system.vaapi = true; # Hardware acceleration
 
     server = {
-      jellyfin = true;
+      jellyfin.enable = true;
       nginx = {
         enable = true;
         mail = "admin@mondomaine.fr";
@@ -336,22 +394,35 @@ voir [docs/kanidm.md](docs/kanidm.md). Secrets : [docs/secrets.md](docs/secrets.
 
 ### Shell (ZSH)
 
-- **powerlevel10k** : Thème moderne avec prompt rapide
+- **powerlevel10k** : Thème moderne avec prompt rapide (instant prompt en option)
 - **forgit** : Interface fzf pour git
-- **auto-notify** : Notifications pour commandes longues
+- **auto-notify** : Notifications pour commandes longues (notify-send en local, séquences
+  OSC 99/777 ou cloche à travers SSH et tmux)
 - **autopair** : Auto-fermeture des guillemets/parenthèses
 - **you-should-use** : Suggestions d'alias
+- **fzf-tab** : Complétion via fzf
+- **any-nix-shell** : Prompt conservé dans `nix shell`
+- Plugins oh-my-zsh : git, helm, sudo, docker, kubectl, battery, colorize, colored-man-pages,
+  history-substring-search, zsh-interactive-cd, command-not-found
 
-### NeoVim
+### NeoVim (`shell.nixvim.enable`)
 
-- **LSP** : Support pour Nix, YAML, JSON, Bash, Terraform, Docker, etc.
+- **LSP** : Nix (nil), YAML, JSON, Bash, Terraform, Docker et Compose, Helm, nginx, Java,
+  Kotlin, TypeScript/ESLint, Elm, Rust
+- **nvim-cmp** + lspkind : Complétion
 - **Telescope** : Recherche fuzzy de fichiers
 - **Treesitter** : Coloration syntaxique avancée
 - **Which-key** : Aide pour les raccourcis clavier
+- Interface : barbar, lualine, noice, indent-blankline, rainbow-delimiters, thème onedark
+- `packages/nvim/plugins/copilot.nix` existe mais n'est pas importé
 
-### VSCodium
+### VS Code (`home-config.vscode.enable`)
 
-- Extensions Nix, GitLab, Kubernetes, Docker
-- GitHub Copilot & Copilot Chat
-- Support markdown et PlantUML
-- Prettier pour le formatage
+Paquet `vscode` de nixpkgs unstable (et non VSCodium), extensions gérées par Nix
+(`mutableExtensionsDir = false`) :
+
+- Nix (nix-ide + nil), YAML, Kubernetes, Helm, containers, GitLab Workflow
+- Java, Kotlin, Gradle, Maven
+- Remote SSH, Project Manager, Claude Code
+- Markdown All in One, PlantUML, Draw.io, Dendron, LanguageTool
+- Prettier (`formatOnSave` activé)

@@ -64,5 +64,7 @@ Les options générales sont centralisées :
 
 - Aligner les `=` comme le reste du fichier ; ne pas lancer de formateur.
 - Ajouter l'option dans l'arbre d'options de `README.md` (section correspondante).
+- Activer le module dans `tests/server.nix` ou `tests/workstation.nix` avec au moins une
+  vérification de son effet (port fermé, secret déclaré, service activé…), puis `nix flake check`.
 - Lancer `/verifier` sur un host adapté et préciser que l'option n'étant activée sur aucun
-  host, seule la non-régression est validée (sauf si l'utilisateur l'active quelque part).
+  host, seule la non-régression y est validée : la couverture vient des tests.

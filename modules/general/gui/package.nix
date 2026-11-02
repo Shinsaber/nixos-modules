@@ -30,37 +30,20 @@ with types;
           #anydesk
           #barrier
           ntfs3g
-          #transgui
-          #nextcloud-client
-          #(nextcloud-client.overrideAttrs (oldAttrs: rec {
-          #    #buildInputs = [ inotify-tools libcloudproviders libsecret openssl pcre qtbase qtkeychain qttools qtwebengine qtquickcontrols2 qtgraphicaleffects qtwebsockets sqlite kio kcoreaddons ];
-          #    nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [extra-cmake-modules];
-          #    buildInputs = oldAttrs.buildInputs ++ [kdePackages.kio];
-          #  }))
+          nextcloud-client
         ];
-        #networking.firewall = {
-        #  allowedTCPPorts = [
-        #    39967
-        #    24800 46393 # barrier
-        #  ];
-        #};
         programs.xwayland.enable = true;
         programs.firefox.enable = true;
       }
     )
 
     (mkIf cfg.pkgs.android.enable
-      (mkMerge [
-        {
-          #programs.adb.enable = true;
-          environment.systemPackages = with pkgs; [
-            adb-sync
-            #android-tools
-          ];
-          virtualisation.waydroid.enable = true;
-        }
-        ( import ./waydroid.nix {inherit config pkgs;} )
-      ])
+      {
+        environment.systemPackages = with pkgs; [
+          adb-sync
+        ];
+        virtualisation.waydroid.enable = true;
+      }
     )
     (mkIf cfg.pkgs.game.enable
       {

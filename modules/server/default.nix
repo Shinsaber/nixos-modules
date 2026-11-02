@@ -8,5 +8,6 @@
     ./romm
     ./kanidm
     ./onlyoffice
+    ./collectionnard
   ];
 }

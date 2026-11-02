@@ -48,7 +48,7 @@ L'App Store est désactivé : toutes les apps sont installées, activées et mis
 (avec le flake). Deux sources :
 
 - **`apps`** : noms des apps packagées dans nixpkgs. Liste :
-  `nix eval --json nixpkgs#nextcloud33.packages.apps --apply builtins.attrNames` ;
+  `nix eval --json nixpkgs#nextcloud34.packages.apps --apply builtins.attrNames` ;
 - **`extraApps`** : les autres, avec `pkgs.fetchNextcloudApp` (URL de l'archive de release,
   `hash`, `license`). Pour le hash, mettre `lib.fakeHash`, évaluer, et recopier la valeur
   donnée par l'erreur.
@@ -111,6 +111,25 @@ shincraft.server.nextcloud.oidc = {
 L'app `user_oidc` est ajoutée automatiquement et le fournisseur est déclaré au démarrage
 (`nextcloud-oidc-provider.service`), avec le secret sops `oidc/nextcloud`. La connexion locale
 reste possible (compte admin créé en CLI). Côté Kanidm : voir [kanidm.md](kanidm.md).
+
+### SSO uniquement
+
+```nix
+shincraft.server.nextcloud.oidc.ssoOnly = true;
+```
+
+- la page de connexion redirige directement vers le fournisseur (réglage
+  `allow_multiple_user_backends = 0` de `user_oidc`, écrit par `nextcloud-oidc-provider.service`) ;
+- formulaire de mot de passe et lien « mot de passe oublié » masqués ;
+- `token_auth_enforced` : WebDAV et les applications refusent le mot de passe du compte et
+  exigent un mot de passe d'application. Les clients de bureau et mobiles l'obtiennent
+  d'eux-mêmes en ouvrant la connexion dans le navigateur (Login Flow v2), donc par le SSO.
+
+Les comptes créés par le SSO n'ont pas de mot de passe Nextcloud : seuls les comptes locaux
+(l'admin créé en CLI) en ont un. Leur formulaire reste accessible sur
+`https://cloud.mondomaine.fr/login?direct=1` : c'est l'**accès de secours** si le fournisseur
+est en panne. Nextcloud ne permet pas de le supprimer ; lui donner un mot de passe robuste
+(la protection contre le brute-force de Nextcloud reste active).
 
 ## Édition de documents avec ONLYOFFICE
 

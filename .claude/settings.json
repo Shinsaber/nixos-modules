@@ -3,6 +3,7 @@
   "permissions": {
     "allow": [
       "Bash(nix eval:*)",
+      "Bash(nix flake check:*)",
       "Bash(nix flake show:*)",
       "Bash(nix flake metadata:*)",
       "Bash(nix search:*)",

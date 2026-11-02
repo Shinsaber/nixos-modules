@@ -29,7 +29,7 @@ with types;
 
     package = mkOption {
       type        = package;
-      default     = pkgs.nextcloud33;
+      default     = pkgs.nextcloud34;
       description = "Paquet Nextcloud à utiliser";
     };
 
@@ -177,7 +177,8 @@ with types;
         type        = nullOr str;
         default     = null;
         description = ''
-          Fichier contenant le secret du client, lisible par l'utilisateur nextcloud.
+          Fichier contenant le secret du client, lisible par root (copié dans `/run` pour
+          l'utilisateur nextcloud au démarrage du service `nextcloud-oidc-provider`).
           Par défaut (`null`) : secret sops `oidc/<clientId>` (même valeur que côté fournisseur).
         '';
       };
@@ -186,6 +187,18 @@ with types;
         type        = str;
         default     = "preferred_username";
         description = "Claim utilisé comme identifiant de l'utilisateur Nextcloud";
+      };
+
+      ssoOnly = mkOption {
+        type        = bool;
+        default     = false;
+        description = ''
+          Connexion par le SSO uniquement : la page de connexion redirige directement vers le
+          fournisseur, le formulaire et la réinitialisation du mot de passe sont masqués, et les
+          clients (WebDAV, applications) doivent utiliser un mot de passe d'application.
+          Le formulaire classique reste accessible avec `/login?direct=1` (accès de secours
+          des comptes locaux, ex. l'admin, si le fournisseur est indisponible).
+        '';
       };
     };
 
@@ -255,6 +268,11 @@ with types;
           host = "/run/redis-nextcloud/redis.sock";
           port = 0;
         };
+      } // optionalAttrs (cfg.oidc.enable && cfg.oidc.ssoOnly) {
+        # La redirection automatique est réglée par nextcloud-oidc-provider (config de l'app)
+        hide_login_form     = true;
+        lost_password_link  = "disabled";
+        token_auth_enforced = true;
       } // optionalAttrs cfg.onlyoffice.enable {
         onlyoffice.DocumentServerUrl = cfg.onlyoffice.documentServerUrl;
       } // cfg.extraSettings;
@@ -301,9 +319,9 @@ with types;
       (mkIf (cfg.s3.enable && cfg.s3.secretFile == null) {
         ${s3SecretName} = { restartUnits = [ "phpfpm-nextcloud.service" ]; };
       })
+      # Pas de `owner` : le secret peut être partagé avec Kanidm sur la même machine
       (mkIf (cfg.oidc.enable && cfg.oidc.clientSecretFile == null) {
         ${oidcSecretName} = {
-          owner        = "nextcloud";
           restartUnits = [ "nextcloud-oidc-provider.service" ];
         };
       })
@@ -329,6 +347,10 @@ with types;
         message   = "shincraft.server.nextcloud.oidc : définir clientSecretFile ou activer shincraft.system.sops.";
       }
       {
+        assertion = cfg.oidc.ssoOnly -> cfg.oidc.enable;
+        message   = "shincraft.server.nextcloud.oidc.ssoOnly : nécessite oidc.enable.";
+      }
+      {
         assertion = cfg.onlyoffice.enable -> sops;
         message   = "shincraft.server.nextcloud.onlyoffice : le secret JWT passe par sops, activer shincraft.system.sops.";
       }
@@ -347,16 +369,25 @@ with types;
       requires    = [ "nextcloud-setup.service" ];
       after       = [ "nextcloud-setup.service" ];
       serviceConfig = {
-        Type            = "oneshot";
-        RemainAfterExit = true;
+        Type                 = "oneshot";
+        RemainAfterExit      = true;
+        Group                = "nextcloud";
+        RuntimeDirectory     = "nextcloud-oidc-provider";
+        RuntimeDirectoryMode = "0750";
       };
+      # occ s'exécute sous l'utilisateur nextcloud : le secret (lisible par root) lui est copié
+      # dans /run, ce qui permet de garder le secret sops à root et de le partager avec Kanidm.
       script = ''
+        install -m 0400 -o nextcloud -g nextcloud ${escapeShellArg oidcSecretFile} "$RUNTIME_DIRECTORY/client-secret"
         ${config.services.nextcloud.occ}/bin/nextcloud-occ user_oidc:provider ${escapeShellArg cfg.oidc.name} \
           --clientid=${escapeShellArg cfg.oidc.clientId} \
-          --clientsecret-file=${escapeShellArg oidcSecretFile} \
+          --clientsecret-file="$RUNTIME_DIRECTORY/client-secret" \
           --discoveryuri=${escapeShellArg cfg.oidc.discoveryUri} \
           --unique-uid=0 \
           --mapping-uid=${escapeShellArg cfg.oidc.mappingUid}
+        # 0 : redirection directe vers le fournisseur (toujours écrit, pour revenir en arrière)
+        ${config.services.nextcloud.occ}/bin/nextcloud-occ config:app:set --type=string --lazy \
+          --value=${if cfg.oidc.ssoOnly then "0" else "1"} user_oidc allow_multiple_user_backends
       '';
     };
   };

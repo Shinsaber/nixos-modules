@@ -53,7 +53,7 @@ packages/
   (`options.shincraft.server.<service> = { … }; config = mkIf cfg.enable { … };`).
   C'est le style à privilégier pour tout nouveau module serveur
   (exemple de référence : [modules/server/romm/default.nix](modules/server/romm/default.nix)).
-  Exception historique : `jellyfin` (et `transmission`, `jellyseerr`) et `nginx` déclarent des
+  Exception historique : `jellyfin` (et `transmission`) et `nginx` déclarent des
   options directement sous `shincraft.server`.
 
 Tout nouveau dossier doit être ajouté à la liste `imports` du `default.nix` parent.
@@ -61,7 +61,7 @@ Tout nouveau dossier doit être ajouté à la liste `imports` du `default.nix` p
 ### Arguments de module spéciaux
 
 Injectés via `_module.args` dans [flake.nix](flake.nix) (uniquement pour `general`) :
-- `unstable` : nixpkgs unstable (ex. VSCodium dans `users/vscodium.nix`).
+- `unstable` : nixpkgs unstable, importé pour l'architecture du host (ex. VS Code, paquet `vscode`, dans `users/vscodium.nix`).
 - `packages.nixvim` : le paquet Neovim construit par le flake.
 
 Ils ne sont **pas** disponibles dans les modules `server` s'ils sont importés seuls.
@@ -102,8 +102,23 @@ Les réglages par utilisateur passent par home-manager (`useGlobalPkgs = true`).
 
 ## Vérifier une modification
 
-Ce dépôt n'a ni tests ni CI. La seule validation fiable est d'**évaluer une configuration
-de host** du dépôt privé consommateur, en remplaçant son input par la copie locale de ce dépôt :
+### 1. Les tests du dépôt (`tests/`)
+
+```sh
+nix flake check          # tous les cas ; les nouveaux fichiers doivent être suivis par git (git add)
+nix eval .#checks.x86_64-linux.server   # un seul cas, avec la trace complète en cas d'échec
+```
+
+Chaque cas (`tests/workstation.nix`, `tests/server.nix`) est une configuration NixOS synthétique
+qui active les options que les hosts réels n'activent pas, et un attrset `checks` de booléens
+vérifiés sur la configuration obtenue. Rien n'est construit, seulement évalué (~2 min).
+**À maintenir** : toute option ajoutée, renommée ou retirée doit apparaître dans un cas, avec au
+moins une vérification de son effet ; une option retirée doit disparaître des cas.
+
+### 2. Les hosts réels
+
+Il n'y a pas de CI. La validation finale est d'**évaluer une configuration de host** du dépôt
+privé consommateur, en remplaçant son input par la copie locale de ce dépôt :
 
 ```sh
 cd <DEPOT_HOSTS>
@@ -117,7 +132,7 @@ nix eval --no-write-lock-file \
 - `--no-write-lock-file` est indispensable : sans lui le `flake.lock` du dépôt des hosts est modifié.
 - ~1 minute par host. Pour un module serveur, évaluer un host qui importe `nixosModules.server`.
   Si l'option n'est activée sur aucun host, l'évaluation ne teste pas le nouveau code :
-  le signaler plutôt que d'affirmer que c'est validé.
+  l'activer dans un cas de `tests/` et le signaler.
 - Vérification rapide de la structure du flake : `nix flake show`.
 - Une évaluation qui réussit n'est **pas** un build : ne pas lancer `nixos-rebuild` ni
   `nix build` d'un système complet sans le demander.
@@ -135,9 +150,11 @@ nix eval --no-write-lock-file \
 ## Points connus du code (dette existante)
 
 À connaître pour ne pas être surpris ; ne pas corriger sans demande :
-- `shincraft.server.jellyseerr` est déclarée mais sans effet (Seerr est activé avec `jellyfin`).
 - `home-config.ssh.listAlias` accepte l'ancien format `matchBlocks` grâce à une conversion
   dans [modules/general/users/default.nix](modules/general/users/default.nix)
   (`sshAliasToSettings`) pour rester compatible avec les configurations existantes.
-- `modules/general/system/splash/` contient son propre `flake.nix` (non utilisé par le flake racine).
+- `modules/general/system/splash/` ajoute le paquet `splash-boot` à l'overlay ; il est branché par le
+  host (`boot.plymouth.themePackages`), pas par le module.
+- Options retirées avec `mkRemovedOptionModule` (message d'erreur explicite) : `system.batterysave`,
+  `system.nix.autoUpgrade`, `system.nix.optiStore`, `server.jellyseerr`.
 - Mettre à jour l'arbre d'options du [README.md](README.md) quand on ajoute ou renomme une option.
